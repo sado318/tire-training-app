@@ -343,13 +343,22 @@ async function callAI(systemPrompt, userPrompt, maxTokens=1000) {
     throw new Error('APIキー未入力');
   }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const url =`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
   const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      contents: [{ role: "user", parts: [{ text: `System: ${systemPrompt}\n\nUser: ${userPrompt}` }] }],
-      generationConfig: { maxOutputTokens: maxTokens }
+      systemInstruction: {
+        parts: [{ text: systemPrompt }]
+      },
+      contents: [{
+        parts: [{
+          text: userPrompt
+        }]
+      }],
+      generationConfig: {
+        maxOutputTokens: maxTokens
+      }
     })
   });
   
