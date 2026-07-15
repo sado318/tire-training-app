@@ -310,20 +310,30 @@ function emptyState(title, sub){
     </div>
   `;
 }
+// 昔のコードがエラーにならないようにする救済措置
+window.storage = {
+  get: (key) => Promise.resolve({ value: localStorage.getItem(key) }),
+  set: (key, val) => { localStorage.setItem(key, val); return Promise.resolve(); },
+  list: (prefix) => {
+    const keys = Object.keys(localStorage).filter(k => k.startsWith(prefix));
+    return Promise.resolve({ keys });
+  }
+};
 
-/* ===================== 設定とAI呼び出し（ここをまるごと置き換え） ===================== */
-// 入力されたキーを保存して再利用するための関数
+
+/* ===================== 設定とAI呼び出し（修正版） ===================== */
+// localStorageを使ってブラウザ内にAPIキーを保存
 const getApiKey = () => $('#apiConfigKey').value.trim();
 
-// キーの保存と読み込み
+// 入力時に自動保存
 $('#apiConfigKey').addEventListener('input', () => {
-  window.storage.set('user-api-key', $('#apiConfigKey').value.trim(), false).catch(()=>{});
+  localStorage.setItem('user-api-key', $('#apiConfigKey').value.trim());
 });
+
+// 読み込み時に復元
 (async function loadApiKey(){
-  try{
-    const r = await window.storage.get('user-api-key', false);
-    if(r && r.value) $('#apiConfigKey').value = r.value;
-  }catch(e){}
+  const savedKey = localStorage.getItem('user-api-key');
+  if(savedKey) $('#apiConfigKey').value = savedKey;
 })();
 
 async function callAI(systemPrompt, userPrompt, maxTokens=1000) {
