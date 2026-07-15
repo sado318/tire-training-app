@@ -357,7 +357,8 @@ async function callAI(systemPrompt, userPrompt, maxTokens=1000) {
         }]
       }],
       generationConfig: {
-        maxOutputTokens: maxTokens
+        maxOutputTokens: maxTokens,
+        responseMimeType: "application/json"
       }
     })
   });
@@ -509,12 +510,12 @@ async function generateAiQuiz(){
     ? weakQs.map(q=>'・'+q.q).join('\n')
     : '（まだ間違えた問題はありません。タイヤ構造・整備・安全に関する基礎知識から幅広く出題してください）';
 
-  const systemPrompt = 'あなたはタイヤ販売店の新人研修教材を作成するベテラン講師です。出力は必ずJSON配列のみを返し、前後に説明文やコードブロック記号(```)は一切つけないでください。各要素は次のキーを持つオブジェクトです: q(問題文,string), choices(4つの選択肢からなる配列,string×4), correct(正解のインデックス,0〜3の整数), explain(解説文,100〜160字程度のstring)。';
+  const systemPrompt = 'あなたはタイヤ販売店の新人研修教材を作成するベテラン講師です。出力は必ずJSON配列のみを返し、前後に説明文やコードブロック記号(```)は一切つけないでください。各要素は次のキーを持つオブジェクトです: q(問題文,string), choices(4つの選択肢からなる配列,string×4), correct(正解のインデックス,0〜3の整数), explain(解説文,100〜160字程度のstring)。重要:必ずJSONのみ返してください。説明は禁止です。前置きは禁止です。Markdownは禁止で```jsonは禁止です。返却形式は必ず次のJSON配列のみです。[{"q":"問題","choices":["A","B","C","D"],"correct":0,"explain":"80文字以内"}]';
   const userPrompt = `次の分野を苦手としている新人スタッフ向けに、実務に役立つタイヤ販売店の接客・整備知識に関する4択問題を3問作成してください。\n\n苦手分野の元になった問題:\n${topicText}\n\n既存の定番問題と表現が重複しないようにしてください。`;
 
 try{
     // callClaude を callAI に変更
-    const raw = await callAI(systemPrompt, userPrompt, 1400); 
+    const raw = await callAI(systemPrompt, userPrompt, 4096);
 
       console.log(raw);
     
