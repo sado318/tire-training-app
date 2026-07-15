@@ -515,6 +515,8 @@ async function generateAiQuiz(){
 try{
     // callClaude を callAI に変更
     const raw = await callAI(systemPrompt, userPrompt, 1400); 
+
+      console.log(raw);
     
     // JSONの掃除をここで行う（stripJsonFence関数は不要になります）
     const cleanedRaw = raw.replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/```\s*$/,'').trim();
