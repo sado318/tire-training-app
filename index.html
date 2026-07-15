@@ -218,6 +218,11 @@ details.entry .meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color
         <label>担当者名</label>
         <input id="staffName" type="text" placeholder="例）山田" maxlength="12">
       </div>
+      <!-- キー入力欄を追加 -->
+      <div class="staffbox">
+        <label>APIキー</label>
+        <input id="apiConfigKey" type="password" placeholder="Geminiキーを入力" maxlength="100">
+      </div>
     </div>
     <nav class="tabs" id="tabs">
       <button data-tab="quiz" class="active">
@@ -306,42 +311,46 @@ function emptyState(title, sub){
   `;
 }
 
-/* ===================== 設定とAI呼び出し（ここを書き換え） ===================== */
-const AI_CONFIG = {
-  provider: 'google', // 'google' または 'openai'
-  googleApiKey: 'AQ.Ab8RN6IurUZAFWsSv_I2p6r7mx0WphyRdejtz6Y38AJ05Pt_Ag',
-  openaiApiKey: 'あなたのOpenAIのキーを入れてください'
-};
+/* ===================== 設定とAI呼び出し（ここをまるごと置き換え） ===================== */
+// 入力されたキーを保存して再利用するための関数
+const getApiKey = () => $('#apiConfigKey').value.trim();
+
+// キーの保存と読み込み
+$('#apiConfigKey').addEventListener('input', () => {
+  window.storage.set('user-api-key', $('#apiConfigKey').value.trim(), false).catch(()=>{});
+});
+(async function loadApiKey(){
+  try{
+    const r = await window.storage.get('user-api-key', false);
+    if(r && r.value) $('#apiConfigKey').value = r.value;
+  }catch(e){}
+})();
 
 async function callAI(systemPrompt, userPrompt, maxTokens=1000) {
-  if (AI_CONFIG.provider === 'google') {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${AI_CONFIG.googleApiKey}`;
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: `System: ${systemPrompt}\n\nUser: ${userPrompt}` }] }],
-        generationConfig: { maxOutputTokens: maxTokens }
-      })
-    });
-    const data = await response.json();
-    return data.candidates[0].content.parts[0].text.trim();
-  } else {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${AI_CONFIG.openaiApiKey}`
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }]
-      })
-    });
-    const data = await response.json();
-    return data.choices[0].message.content.trim();
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    showToast('APIキーを入力してください');
+    throw new Error('APIキー未入力');
   }
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ role: "user", parts: [{ text: `System: ${systemPrompt}\n\nUser: ${userPrompt}` }] }],
+      generationConfig: { maxOutputTokens: maxTokens }
+    })
+  });
+  
+  const data = await response.json();
+  if (data.error) {
+    showToast('エラー: ' + data.error.message);
+    throw new Error(data.error.message);
+  }
+  return data.candidates[0].content.parts[0].text.trim();
 }
+
 /* ===================== タブ切り替え ===================== */
 $('#tabs').addEventListener('click', (e)=>{
   const btn = e.target.closest('button[data-tab]');
@@ -639,7 +648,7 @@ async function submitPractice(){
   const userPrompt = `シーン: ${title}\n\n接客トーク原稿:\n${text}`;
 
   try{
-    const feedback = await callClaude(systemPrompt, userPrompt, 900);
+    const feedback = await callAI(systemPrompt, userPrompt, 900);
     const entry = { id: uid(), title, staff: getStaffName(), text, feedback, timestamp: Date.now() };
     const res = await window.storage.set('practice-entry:'+entry.id, JSON.stringify(entry), true);
     if(!res) throw new Error('save failed');
