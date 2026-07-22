@@ -2,6 +2,8 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="mobile-web-app-capable" content="yes">
 <title>タイヤショップ新人教育アプリ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -138,9 +140,87 @@ main{padding:28px;}
 .btn:disabled{opacity:.5;cursor:not-allowed;filter:none;}
 .btn.danger{background:var(--warn);color:#fff;}
 .btn.small{padding:7px 13px;font-size:12.5px;}
+.icon-btn{
+  background:none;border:1px solid var(--border-strong);color:var(--text-faint);border-radius:7px;
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;
+  font-size:13px;transition:border-color .15s ease, color .15s ease;
+}
+.icon-btn:hover{border-color:var(--warn);color:var(--warn);}
 
 .spinner{width:13px;height:13px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;display:inline-block;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:7px;}
 @keyframes spin{to{transform:rotate(360deg);}}
+
+/* タイヤ・マッチングパズル */
+.puzzle-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.puzzle-score{background:var(--surface-2);padding:6px 14px;border-radius:20px;font-size:12.5px;color:var(--text-dim);white-space:nowrap;}
+.puzzle-board{position:relative;display:flex;justify-content:space-between;gap:5%;min-height:220px;}
+.puzzle-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+.puzzle-col{display:flex;flex-direction:column;gap:12px;width:46%;position:relative;z-index:1;}
+.puzzle-col-label{font-size:11.5px;font-weight:700;color:var(--text-faint);text-align:center;margin-bottom:2px;}
+.puzzle-card{
+  background:var(--surface);border:2px solid var(--border-strong);border-radius:12px;
+  padding:14px 12px;cursor:grab;user-select:none;touch-action:none;
+  transition:border-color .15s ease, background .15s ease, transform .12s ease, opacity .2s ease;
+  font-weight:700;font-size:14px;text-align:center;
+}
+.puzzle-card.vehicle{border-color:var(--primary-soft);}
+.puzzle-card.tire{border-color:var(--ai-soft);font-family:'IBM Plex Mono',monospace;font-size:15px;cursor:default;}
+.puzzle-card .ex{display:block;font-size:11px;font-weight:400;color:var(--text-faint);margin-top:3px;}
+.puzzle-card.vehicle{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.vehicle-icon{width:42px;height:28px;color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto;}
+.vehicle-icon svg{width:100%;height:100%;}
+.vehicle-label{text-align:center;}
+
+.icon-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.icon-pick-btn{border:2px solid var(--border-strong);border-radius:10px;background:var(--surface);padding:10px 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:border-color .15s ease, background .15s ease;}
+.icon-pick-btn:hover{border-color:var(--primary);}
+.icon-pick-btn.selected{border-color:var(--primary);background:var(--primary-soft);}
+.icon-pick-svg{width:30px;height:20px;color:var(--text-dim);display:flex;align-items:center;justify-content:center;}
+.icon-pick-svg svg{width:100%;height:100%;}
+.icon-pick-btn.selected .icon-pick-svg{color:var(--primary);}
+.icon-pick-label{font-size:11px;color:var(--text-dim);text-align:center;line-height:1.3;}
+
+/* AI家庭教師 */
+.tutor-card{display:flex;flex-direction:column;}
+.tutor-chat-log{
+  display:flex;flex-direction:column;gap:12px;
+  min-height:220px;max-height:52vh;overflow-y:auto;
+  padding:4px 2px;margin-bottom:10px;
+}
+.tutor-empty{
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  text-align:center;padding:30px 10px;color:var(--text-dim);
+}
+.tutor-empty p{margin:0;font-size:13px;line-height:1.7;max-width:420px;}
+.tutor-msg{max-width:85%;}
+.tutor-msg.ai{align-self:flex-start;}
+.tutor-msg.user{align-self:flex-end;}
+.tutor-msg-label{font-size:11px;font-weight:700;color:var(--text-faint);margin-bottom:4px;}
+.tutor-msg.user .tutor-msg-label{text-align:right;}
+.tutor-msg-body{
+  white-space:pre-wrap;font-size:13.5px;line-height:1.75;padding:10px 14px;border-radius:12px;
+}
+.tutor-msg.ai .tutor-msg-body{background:var(--ai-soft);border:1px solid #ded3fb;color:var(--text);border-top-left-radius:3px;}
+.tutor-msg.user .tutor-msg-body{background:var(--primary-soft);color:var(--text);border-top-right-radius:3px;}
+.tutor-msg.loading .tutor-msg-body{display:flex;align-items:center;color:var(--text-dim);}
+.tutor-start-row{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.tutor-input-row{display:flex;gap:10px;align-items:flex-end;}
+.tutor-input-row textarea{
+  flex:1;background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;
+  padding:10px 13px;font-family:'Inter',sans-serif;font-size:14px;resize:none;line-height:1.6;
+}
+.tutor-input-row textarea:focus{outline:none;border-color:var(--ai);box-shadow:0 0 0 3px var(--ai-soft);}
+.tutor-input-row .btn{flex:none;}
+.puzzle-card.dragging{opacity:.45;transform:scale(.97);}
+.puzzle-card.matched{border-color:var(--good);background:var(--good-soft);cursor:default;opacity:.8;}
+.puzzle-card.wrong-flash{border-color:var(--warn);background:var(--warn-soft);animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+
+.puzzle-banner{margin-top:18px;padding:15px 18px;border-radius:10px;border:1px solid var(--border);}
+.puzzle-banner.hidden{display:none;}
+.puzzle-banner .ping{font-weight:800;font-size:15px;margin-bottom:5px;}
+.puzzle-banner p{margin:0;font-size:13.5px;line-height:1.75;color:var(--text-dim);}
+.puzzle-actions{margin-top:18px;display:flex;justify-content:flex-end;}
 
 /* practice tab */
 .field{margin-bottom:14px;}
@@ -165,24 +245,10 @@ details.entry .meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color
 .entry-body .label{font-size:11px;font-weight:700;color:var(--text-faint);margin-bottom:6px;}
 .entry-body .orig-text{white-space:pre-wrap;font-size:13.5px;line-height:1.7;color:var(--text-dim);background:var(--surface-2);border-radius:8px;padding:12px 14px;margin-bottom:14px;}
 
-/* board */
-.board-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:10px;flex-wrap:wrap;}
-.post-list{display:flex;flex-direction:column;gap:10px;}
-.post-item{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:15px 16px;cursor:pointer;transition:border-color .15s ease, box-shadow .15s ease;box-shadow:var(--shadow);}
-.post-item:hover{border-color:var(--primary);}
-.post-item h4{margin:0 0 6px;font-size:14.5px;font-weight:700;}
-.post-item p{margin:0;font-size:13px;color:var(--text-dim);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.post-item .meta{margin-top:10px;display:flex;gap:14px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--text-faint);}
-
 .modal-bg{position:fixed;inset:0;background:rgba(20,22,25,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50;}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;width:100%;max-width:460px;max-height:86vh;overflow-y:auto;box-shadow:0 10px 40px rgba(20,22,25,.18);}
 .modal h3{margin:0 0 14px;font-size:16.5px;font-weight:700;}
 .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:6px;}
-
-.comment-list{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
-.comment{background:var(--surface-2);border-radius:10px;padding:12px 14px;}
-.comment .c-meta{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-faint);margin-bottom:6px;}
-.comment p{margin:0;font-size:13.5px;line-height:1.6;color:var(--text);}
 
 .empty{padding:44px 20px;text-align:center;color:var(--text-faint);}
 .empty svg{width:32px;height:32px;margin-bottom:10px;opacity:.5;}
@@ -195,8 +261,45 @@ details.entry .meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color
 @media (max-width:640px){
   header.top{padding:18px 16px 0;}
   main{padding:16px;}
-  nav.tabs{overflow-x:auto;}
+  nav.tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  nav.tabs::-webkit-scrollbar{display:none;}
   .staffbox input{width:80px;}
+
+  .card{padding:16px;}
+
+  /* パズル：カード内の余白・文字サイズを詰めて、狭い画面でも横並びを維持 */
+  .puzzle-board{gap:3%;}
+  .puzzle-col{width:48.5%;}
+  .puzzle-card{padding:10px 6px;font-size:12.5px;}
+  .puzzle-card .ex{font-size:10px;}
+  .vehicle-icon{width:34px;height:23px;}
+  .puzzle-header{gap:8px;}
+  .puzzle-score{font-size:11.5px;padding:5px 10px;}
+  .puzzle-actions{flex-direction:column;}
+  .puzzle-actions .btn{width:100%;}
+
+  /* 候補追加モーダルのアイコンピッカーを2列に */
+  .icon-picker{grid-template-columns:repeat(2,1fr);}
+
+  /* AI家庭教師：入力欄とボタンを縦積みにしてタップしやすく */
+  .tutor-input-row{flex-direction:column;align-items:stretch;}
+  .tutor-input-row .btn{width:100%;}
+  .tutor-msg{max-width:94%;}
+  .tutor-chat-log{max-height:44vh;}
+
+  /* クイズ：選択肢や見出しの余白を調整 */
+  .q-grid{grid-template-columns:1fr;}
+  .detail-q{font-size:16.5px;}
+  .choice{padding:12px 14px;font-size:14px;}
+
+  .modal{padding:18px;}
+  .section-head-row{margin:26px 0 12px;}
+}
+
+@media (max-width:400px){
+  .vehicle-icon{width:30px;height:20px;}
+  .puzzle-card{font-size:11.5px;padding:8px 4px;}
+  header.top h1{font-size:17px;}
 }
 </style>
 </head>
@@ -230,12 +333,16 @@ details.entry .meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color
         クイズ
       </button>
       <button data-tab="practice">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h8M8 13h5"/></svg>
-        ロープレ練習
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        タイヤマッチング
       </button>
-      <button data-tab="board">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-2 1.7-2 3.5M12 17h.01"/></svg>
-        質問掲示板
+      <button data-tab="wheel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/><path d="M12 4v3M12 17v3M4 12h3M17 12h3M6.5 6.5l2 2M15.5 15.5l2 2M6.5 17.5l2-2M15.5 8.5l2-2"/></svg>
+        ホイールマッチング
+      </button>
+      <button data-tab="tutor">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>
+        AI家庭教師
       </button>
     </nav>
   </header>
@@ -247,26 +354,28 @@ details.entry .meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color
       <div id="quizDetail" class="hidden"></div>
     </section>
 
-    <!-- PRACTICE (AI ロープレ) TAB -->
+    <!-- PRACTICE (タイヤ・マッチングパズル) TAB -->
     <section id="tab-practice" class="hidden">
-      <div id="practiceForm"></div>
-      <div id="practiceDetail" class="hidden"></div>
+      <div id="puzzleContainer"></div>
     </section>
 
-    <!-- BOARD TAB -->
-    <section id="tab-board" class="hidden">
-      <div class="board-toolbar">
-        <div>
-          <p class="section-title" style="margin:0;">よくある質問・状況相談（全スタッフ共有）</p>
-          <p id="boardSyncStatus" style="margin:4px 0 0;font-size:11.5px;color:var(--text-faint);"></p>
-        </div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn ghost small" id="boardSettingsBtn">共有設定</button>
-          <button class="btn" id="newPostBtn">＋ 質問を投稿</button>
+    <!-- WHEEL (ホイール・マッチングパズル) TAB -->
+    <section id="tab-wheel" class="hidden">
+      <div id="wheelPuzzleContainer"></div>
+    </section>
+
+    <!-- TUTOR (AI家庭教師) TAB -->
+    <section id="tab-tutor" class="hidden">
+      <div class="card tutor-card">
+        <p class="section-title" style="margin-bottom:4px;">🎓 AI家庭教師</p>
+        <p style="font-size:12.5px;color:var(--text-dim);margin:0 0 14px;">クイズの苦手分野をAIが自動で見つけて、順番に解説します。合間にいつでも自由に質問できます。</p>
+        <div id="tutorChatLog" class="tutor-chat-log"></div>
+        <div id="tutorStartRow" class="tutor-start-row"></div>
+        <div class="tutor-input-row">
+          <textarea id="tutorInput" rows="2" placeholder="気になることを自由に質問できます…（Enterで送信、Shift+Enterで改行）"></textarea>
+          <button class="btn ai-btn" id="tutorSendBtn">送信</button>
         </div>
       </div>
-      <div id="postList" class="post-list"></div>
-      <div id="postDetail" class="hidden"></div>
     </section>
   </main>
 </div>
@@ -320,149 +429,13 @@ function emptyState(title, sub){
 window.storage = {
   get: (key) => Promise.resolve({ value: localStorage.getItem(key) }),
   set: (key, val) => { localStorage.setItem(key, val); return Promise.resolve(); },
+  delete: (key) => { localStorage.removeItem(key); return Promise.resolve(); },
   list: (prefix) => {
     const keys = Object.keys(localStorage).filter(k => k.startsWith(prefix));
     return Promise.resolve({ keys });
   }
 };
 
-/* ===================== 掲示板だけ共有する(Firebase Firestore) ===================== */
-// クイズ進捗・ロープレ履歴は今まで通りブラウザごとのlocalStorageのまま。
-// 掲示板(質問・コメント)だけ、設定されていればFirestoreで全スタッフ共有する。
-let db = null;
-let fsApi = null;
-
-function getFirebaseConfig(){
-  const raw = localStorage.getItem('firebase-config');
-  if(!raw) return null;
-  try{ return JSON.parse(raw); }catch(e){ return null; }
-}
-
-async function initFirebase(){
-  const cfg = getFirebaseConfig();
-  if(!cfg){ db = null; updateBoardSyncStatus(); return false; }
-  try{
-    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
-    const firestoreMod = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    const app = initializeApp(cfg);
-    db = firestoreMod.getFirestore(app);
-    fsApi = firestoreMod;
-    updateBoardSyncStatus();
-    return true;
-  }catch(e){
-    console.error(e);
-    db = null;
-    showToast('共有設定への接続に失敗しました。設定内容をご確認ください。');
-    updateBoardSyncStatus();
-    return false;
-  }
-}
-
-function updateBoardSyncStatus(){
-  const el = $('#boardSyncStatus');
-  if(!el) return;
-  el.textContent = db
-    ? '✓ 全スタッフで共有中'
-    : 'この端末だけに保存中（共有設定が未設定です）';
-}
-
-/* 掲示板データの読み書き：Firebase設定があればFirestore、なければ従来のlocalStorage */
-async function boardListPosts(){
-  if(db){
-    const snap = await fsApi.getDocs(fsApi.collection(db, 'board-posts'));
-    const posts = [];
-    snap.forEach(d => posts.push(d.data()));
-    return posts;
-  }
-  const listRes = await window.storage.list('board-post:', true);
-  const keys = (listRes && listRes.keys) || [];
-  const posts = [];
-  for(const k of keys){
-    try{
-      const r = await window.storage.get(k, true);
-      if(r && r.value) posts.push(JSON.parse(r.value));
-    }catch(e){}
-  }
-  return posts;
-}
-
-async function boardGetPost(id){
-  if(db){
-    const snap = await fsApi.getDoc(fsApi.doc(db, 'board-posts', id));
-    return snap.exists() ? snap.data() : null;
-  }
-  try{
-    const r = await window.storage.get('board-post:'+id, true);
-    return r && r.value ? JSON.parse(r.value) : null;
-  }catch(e){ return null; }
-}
-
-async function boardSavePost(post){
-  if(db){
-    await fsApi.setDoc(fsApi.doc(db, 'board-posts', post.id), post);
-    return true;
-  }
-  try{
-    await window.storage.set('board-post:'+post.id, JSON.stringify(post), true);
-    return true;
-  }catch(e){ return false; }
-}
-
-/* 共有設定モーダル */
-function openBoardSettingsModal(){
-  const bg = document.createElement('div');
-  bg.className = 'modal-bg';
-  const current = localStorage.getItem('firebase-config') || '';
-  bg.innerHTML = `
-    <div class="modal">
-      <h3>掲示板の共有設定</h3>
-      <p style="font-size:12.5px;line-height:1.7;color:var(--text-dim);margin:0 0 14px;">
-        掲示板をスタッフ全員で共有するには、無料のFirebaseプロジェクトを作成し、
-        「Firestore Database」を有効化したうえで、Webアプリの設定情報(firebaseConfig)を
-        下に貼り付けてください。空欄のままなら、この端末だけに保存されます。
-      </p>
-      <div class="field">
-        <label>firebaseConfig（JSON形式で貼り付け）</label>
-        <textarea id="fbConfigInput" rows="8" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","storageBucket":"...","messagingSenderId":"...","appId":"..."}'>${escapeHtml(current)}</textarea>
-      </div>
-      <div class="modal-actions" style="justify-content:space-between;">
-        <button class="btn ghost" id="fbClearBtn">共有をやめる</button>
-        <div style="display:flex;gap:10px;">
-          <button class="btn ghost" id="fbCancelBtn">キャンセル</button>
-          <button class="btn" id="fbSaveBtn">保存して接続</button>
-        </div>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(bg);
-  $('#fbCancelBtn', bg).addEventListener('click', ()=>bg.remove());
-  bg.addEventListener('click', (e)=>{ if(e.target===bg) bg.remove(); });
-  $('#fbClearBtn', bg).addEventListener('click', async ()=>{
-    localStorage.removeItem('firebase-config');
-    db = null;
-    updateBoardSyncStatus();
-    bg.remove();
-    showToast('共有を解除しました（この端末だけの保存に戻ります）');
-    loadPosts();
-  });
-  $('#fbSaveBtn', bg).addEventListener('click', async ()=>{
-    const text = $('#fbConfigInput', bg).value.trim();
-    if(!text){ showToast('設定を入力するか、「共有をやめる」を押してください'); return; }
-    try{
-      JSON.parse(text);
-    }catch(e){
-      showToast('JSON形式が正しくありません');
-      return;
-    }
-    localStorage.setItem('firebase-config', text);
-    const ok = await initFirebase();
-    if(ok){
-      bg.remove();
-      showToast('共有設定を保存しました');
-      loadPosts();
-    }
-  });
-}
 
 
 /* ===================== 設定とAI呼び出し（修正版） ===================== */
@@ -520,13 +493,38 @@ async function callAI(systemPrompt, userPrompt, maxTokens=1000, wantJson=false) 
   return data.candidates[0].content.parts[0].text.trim();
 }
 
+/* 複数ターンの会話用（AI家庭教師のチャットで使用） */
+async function callAIChat(systemPrompt, messages, maxTokens=900) {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    showToast('APIキーを入力してください');
+    throw new Error('APIキー未入力');
+  }
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: systemPrompt }] },
+      contents: messages.map(m => ({ role: m.role, parts: [{ text: m.text }] })),
+      generationConfig: { maxOutputTokens: maxTokens }
+    })
+  });
+  const data = await response.json();
+  if (data.error) {
+    showToast('エラー: ' + data.error.message);
+    throw new Error(data.error.message);
+  }
+  return data.candidates[0].content.parts[0].text.trim();
+}
+
 /* ===================== タブ切り替え ===================== */
 $('#tabs').addEventListener('click', (e)=>{
   const btn = e.target.closest('button[data-tab]');
   if(!btn) return;
   $$('#tabs button').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  ['quiz','practice','board'].forEach(name=>{
+  ['quiz','practice','wheel','tutor'].forEach(name=>{
     $('#tab-'+name).classList.toggle('hidden', name !== btn.dataset.tab);
   });
 });
@@ -810,89 +808,167 @@ function backToQuizList(){
   renderQuizList();
 }
 
-/* ===================== 2. ロープレ練習（AIフィードバック） ===================== */
-let submittingPractice = false;
+/* ===================== 2. AI家庭教師（レッスン＋自由質問チャット） ===================== */
+let tutorHistory = [];      // {role:'user'|'model', text}
+let tutorLessonQueue = [];
+let tutorLessonIndex = 0;
+let tutorBusy = false;
 
-function renderPracticeForm(){
-  $('#practiceForm').innerHTML = `
-    <div class="card">
-      <p class="section-title" style="margin-bottom:16px;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--ai)"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg>
-        接客トークをAIコーチに見てもらう
-      </p>
-      <div class="field">
-        <label>シーン・状況</label>
-        <input id="pTitle" type="text" maxlength="50" placeholder="例：ご来店〜タイヤサイズの確認">
-      </div>
-      <div class="field">
-        <label>接客トーク原稿（実際に話した内容やイメージを貼り付け・入力）</label>
-        <textarea id="pText" rows="8" maxlength="1500" placeholder="いらっしゃいませ。本日はどのようなご用件でしょうか…"></textarea>
-        <div class="char-count"><span id="pCount">0</span> / 1500字</div>
-      </div>
-      <button class="btn ai-btn" id="submitPracticeBtn">${submittingPractice ? '<span class="spinner"></span>AIが分析中…' : 'AIにフィードバックを依頼する'}</button>
-      <div id="latestFeedback"></div>
-    </div>
-
-    <div class="section-head-row">
-      <p class="section-title" style="margin:0;">練習履歴（全スタッフ共有）</p>
-    </div>
-    <div id="practiceList" class="entry-list"></div>
-  `;
-
-  const ta = $('#pText');
-  ta.addEventListener('input', ()=>{ $('#pCount').textContent = ta.value.length; });
-
-  $('#submitPracticeBtn').addEventListener('click', submitPractice);
+function computeWeakTopics(){
+  const weak = QUIZ_DATA.filter(q => quizProgress[q.id]?.answered && !quizProgress[q.id]?.correctFlag).map(q=>q.q);
+  if(weak.length) return weak;
+  return QUIZ_DATA.slice(0, 3).map(q=>q.q);
 }
 
-async function submitPractice(){
-  if(submittingPractice) return;
-  const title = $('#pTitle').value.trim() || '無題のシーン';
-  const text = $('#pText').value.trim();
-  if(!text){ showToast('接客トークの内容を入力してください'); return; }
+async function startLesson(){
+  if(tutorBusy) return;
+  tutorHistory = [];
+  tutorLessonQueue = computeWeakTopics();
+  tutorLessonIndex = 0;
+  await askNextLessonTopic();
+}
 
-  submittingPractice = true;
-  $('#submitPracticeBtn').disabled = true;
-  $('#submitPracticeBtn').innerHTML = '<span class="spinner"></span>AIが分析中…';
+async function askNextLessonTopic(){
+  if(tutorBusy) return;
+  if(tutorLessonIndex >= tutorLessonQueue.length){
+    tutorHistory.push({ role:'model', text:'これで苦手分野のレッスンは一通り終わりです。よく頑張りました！他に気になることがあれば、下から自由に質問してくださいね。' });
+    renderTutorChat();
+    return;
+  }
+  const topic = tutorLessonQueue[tutorLessonIndex];
+  tutorLessonIndex++;
+  tutorHistory.push({ role:'user', text:`次のテーマについて、初心者にもわかるように要点を教えてください。テーマ：「${topic}」` });
+  await runTutorTurn();
+}
 
-  const systemPrompt = 'あなたはタイヤ販売店で20年のキャリアを持つベテラン接客トレーナーです。新人スタッフが書いた接客トークの原稿を読み、日本語で次の3つの観点でフィードバックしてください。【良かった点】【改善したい点】【次に試したい言い回し】。合計250〜350字程度、箇条書き中心で、新人が萎縮しないよう前向きで具体的なトーンにしてください。Markdownの見出し記号(#)は使わず、【】の小見出しのみ使ってください。';
-  const userPrompt = `シーン: ${title}\n\n接客トーク原稿:\n${text}`;
+async function sendTutorMessage(){
+  if(tutorBusy) return;
+  const input = $('#tutorInput');
+  const text = input.value.trim();
+  if(!text) return;
+  tutorHistory.push({ role:'user', text });
+  input.value = '';
+  await runTutorTurn();
+}
 
+async function runTutorTurn(){
+  tutorBusy = true;
+  renderTutorChat(true);
+  const systemPrompt = 'あなたはタイヤ販売店の新人スタッフを教える、優しくて頼れる家庭教師AIです。専門用語には簡単な説明を添え、初心者にもわかりやすい言葉で教えてください。生徒を励ましながら、1回の返信は300〜400字程度で簡潔にまとめてください。見出しが必要な場合は【】を使い、Markdownの#やアスタリスクによる強調は使わないでください。';
   try{
-    const feedback = await callAI(systemPrompt, userPrompt, 900);
-    const entry = { id: uid(), title, staff: getStaffName(), text, feedback, timestamp: Date.now() };
-    const res = await window.storage.set('practice-entry:'+entry.id, JSON.stringify(entry), true);
-    if(!res) throw new Error('save failed');
-
-    $('#latestFeedback').innerHTML = `
-      <div class="feedback-card">
-        <span class="tag">✦ AIコーチからのフィードバック</span>
-        <div class="body-text">${escapeHtml(feedback)}</div>
-      </div>
-    `;
-    $('#pText').value = '';
-    $('#pCount').textContent = '0';
-    showToast('AIフィードバックを取得しました');
-    loadPracticeEntries();
+    const reply = await callAIChat(systemPrompt, tutorHistory, 900);
+    tutorHistory.push({ role:'model', text: reply });
   }catch(e){
-    showToast('AIフィードバックの取得に失敗しました。もう一度お試しください。');
+    tutorHistory.push({ role:'model', text:'すみません、うまく応答できませんでした。もう一度お試しください。' });
   }finally{
-    submittingPractice = false;
-    $('#submitPracticeBtn').disabled = false;
-    $('#submitPracticeBtn').innerHTML = 'AIにフィードバックを依頼する';
+    tutorBusy = false;
+    renderTutorChat();
   }
 }
 
-async function loadPracticeEntries(){
-  const listEl = $('#practiceList');
-  if(!listEl) return;
-  try{
-    const listRes = await window.storage.list('practice-entry:', true);
-    const keys = (listRes && listRes.keys) || [];
-    if(keys.length===0){
-      listEl.innerHTML = emptyState('まだ練習履歴がありません', '上のフォームから最初のロープレをAIに見てもらいましょう。');
-      return;
+function renderTutorChat(loading){
+  const log = $('#tutorChatLog');
+  if(!log) return;
+
+  if(tutorHistory.length === 0){
+    log.innerHTML = `
+      <div class="tutor-empty">
+        <p>まだ会話がありません。下のボタンで苦手分野のレッスンを始めるか、入力欄から自由に質問してみましょう。</p>
+        <button class="btn ai-btn small" id="tutorStartBtn">🎓 レッスンを始める</button>
+      </div>
+    `;
+    $('#tutorStartBtn').addEventListener('click', startLesson);
+  } else {
+    log.innerHTML = tutorHistory.map(m => `
+      <div class="tutor-msg ${m.role==='model' ? 'ai' : 'user'}">
+        <div class="tutor-msg-label">${m.role==='model' ? '✦ AI家庭教師' : escapeHtml(getStaffName())}</div>
+        <div class="tutor-msg-body">${escapeHtml(m.text)}</div>
+      </div>
+    `).join('');
+    if(loading){
+      log.innerHTML += `
+        <div class="tutor-msg ai loading">
+          <div class="tutor-msg-label">✦ AI家庭教師</div>
+          <div class="tutor-msg-body"><span class="spinner" style="border-color:rgba(124,77,234,.25);border-top-color:var(--ai);"></span>考え中…</div>
+        </div>
+      `;
     }
+  }
+  log.scrollTop = log.scrollHeight;
+  updateTutorControls(loading);
+}
+
+function updateTutorControls(loading){
+  const row = $('#tutorStartRow');
+  if(!row) return;
+  const hasMoreLesson = tutorLessonQueue.length > 0 && tutorLessonIndex < tutorLessonQueue.length && tutorHistory.length > 0;
+  let html = '';
+  if(hasMoreLesson){
+    html += `<button class="btn ghost small" id="tutorNextTopicBtn" ${loading?'disabled':''}>次のトピックへ（残り${tutorLessonQueue.length - tutorLessonIndex}件）→</button>`;
+  }
+  if(tutorHistory.length > 0){
+    html += `<button class="btn ghost small" id="tutorResetBtn" ${loading?'disabled':''}>🔄 会話をリセット</button>`;
+  }
+  row.innerHTML = html;
+
+  const nextBtn = $('#tutorNextTopicBtn');
+  if(nextBtn) nextBtn.addEventListener('click', askNextLessonTopic);
+  const resetBtn = $('#tutorResetBtn');
+  if(resetBtn) resetBtn.addEventListener('click', ()=>{
+    tutorHistory = []; tutorLessonQueue = []; tutorLessonIndex = 0;
+    renderTutorChat();
+  });
+
+  $('#tutorSendBtn').disabled = !!loading;
+  $('#tutorInput').disabled = !!loading;
+}
+
+$('#tutorSendBtn').addEventListener('click', sendTutorMessage);
+$('#tutorInput').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendTutorMessage();
+  }
+});
+
+/* ===================== 3. マッチングパズル（タイヤ／ホイール共通エンジン） ===================== */
+function shuffleArr(arr){ return arr.slice().sort(()=>Math.random()-0.5); }
+
+/* 車種タイプの共通アイコンセット。実写真の代わりにこの中から選んでもらう。 */
+const VEHICLE_TYPES = [
+  { key:'kei', label:'軽自動車',
+    icon:'<svg viewBox="0 0 48 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="14" y="6" width="20" height="13" rx="4"/><rect x="8" y="17" width="32" height="8" rx="3"/><circle cx="15" cy="27" r="3.5"/><circle cx="33" cy="27" r="3.5"/></svg>' },
+  { key:'compact', label:'コンパクトカー',
+    icon:'<svg viewBox="0 0 48 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="13" y="8" width="22" height="11" rx="4"/><rect x="6" y="17" width="36" height="8" rx="3"/><circle cx="15" cy="27" r="3.5"/><circle cx="33" cy="27" r="3.5"/></svg>' },
+  { key:'sedan', label:'セダン',
+    icon:'<svg viewBox="0 0 48 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="15" y="9" width="18" height="9" rx="3"/><rect x="4" y="18" width="40" height="7" rx="3"/><circle cx="15" cy="27" r="3.5"/><circle cx="33" cy="27" r="3.5"/></svg>' },
+  { key:'suv', label:'SUV',
+    icon:'<svg viewBox="0 0 48 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="12" y="6" width="24" height="12" rx="3"/><rect x="5" y="16" width="38" height="9" rx="3"/><circle cx="15" cy="27" r="3.5"/><circle cx="33" cy="27" r="3.5"/></svg>' },
+  { key:'minivan', label:'ミニバン',
+    icon:'<svg viewBox="0 0 48 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="10" y="5" width="28" height="13" rx="3"/><rect x="6" y="15" width="36" height="10" rx="3"/><circle cx="15" cy="27" r="3.5"/><circle cx="33" cy="27" r="3.5"/></svg>' },
+  { key:'truck', label:'商用車・トラック',
+    icon:'<svg viewBox="0 0 48 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="8" y="14" width="12" height="11" rx="3"/><rect x="20" y="18" width="22" height="7" rx="1"/><circle cx="14" cy="27" r="3.5"/><circle cx="36" cy="27" r="3.5"/></svg>' }
+];
+function vehicleIconSvg(key){
+  const found = VEHICLE_TYPES.find(v=>v.key===key);
+  return found ? found.icon : VEHICLE_TYPES[0].icon;
+}
+function vehicleTypeLabel(key){
+  const found = VEHICLE_TYPES.find(v=>v.key===key);
+  return found ? found.label : '車種';
+}
+
+function createMatchingGame(cfg){
+  let customData = [];
+  let matched = new Set();
+  let leftOrder = [], rightOrder = [];
+
+  function allData(){ return cfg.builtinData.concat(customData); }
+  function byId(id){ return allData().find(d=>d.id===id); }
+
+  async function listCustomItems(){
+    const listRes = await window.storage.list(cfg.storagePrefixItem, true);
+    const keys = (listRes && listRes.keys) || [];
     const items = [];
     for(const k of keys){
       try{
@@ -900,172 +976,386 @@ async function loadPracticeEntries(){
         if(r && r.value) items.push(JSON.parse(r.value));
       }catch(e){}
     }
-    items.sort((a,b)=>b.timestamp-a.timestamp);
-    listEl.innerHTML = items.map(en => `
-      <details class="entry">
-        <summary>
+    return items;
+  }
+  async function saveCustomItem(item){
+    await window.storage.set(cfg.storagePrefixItem+item.id, JSON.stringify(item), true);
+  }
+  async function deleteCustomItem(id){
+    await window.storage.delete(cfg.storagePrefixItem+id, true);
+  }
+
+  async function initRound(){
+    try{ customData = await listCustomItems(); }catch(e){ customData = []; }
+    matched = new Set();
+    const data = allData();
+    leftOrder = shuffleArr(data.map(d=>d.id));
+    rightOrder = shuffleArr(data.map(d=>d.id));
+    renderShell();
+  }
+
+  function renderShell(){
+    $('#'+cfg.containerId).innerHTML = `
+      <div class="card">
+        <div class="puzzle-header">
           <div>
-            <h4>${escapeHtml(en.title)}</h4>
-            <div class="meta">担当: ${escapeHtml(en.staff)} ・ ${fmtDate(en.timestamp)}</div>
+            <p class="section-title" style="margin:0 0 4px;">${cfg.icon} ${escapeHtml(cfg.title)}</p>
+            <p style="font-size:12.5px;color:var(--text-dim);margin:0;">${escapeHtml(cfg.subtitle)}</p>
           </div>
-          <span class="ai-badge">✦ AI講評あり</span>
-        </summary>
-        <div class="entry-body">
-          <div class="label">接客トーク原稿</div>
-          <div class="orig-text">${escapeHtml(en.text)}</div>
-          <div class="feedback-card" style="margin-top:0;">
-            <span class="tag">✦ AIコーチからのフィードバック</span>
-            <div class="body-text">${escapeHtml(en.feedback)}</div>
+          <div class="puzzle-score mono" id="${cfg.key}Score"></div>
+        </div>
+        <div class="puzzle-board" id="${cfg.key}Board">
+          <svg id="${cfg.key}Svg" class="puzzle-svg"></svg>
+          <div class="puzzle-col">
+            <div class="puzzle-col-label">${escapeHtml(cfg.leftColLabel)}</div>
+            <div id="${cfg.key}LeftCol" style="display:flex;flex-direction:column;gap:12px;"></div>
+          </div>
+          <div class="puzzle-col">
+            <div class="puzzle-col-label">${escapeHtml(cfg.rightColLabel)}</div>
+            <div id="${cfg.key}RightCol" style="display:flex;flex-direction:column;gap:12px;"></div>
           </div>
         </div>
-      </details>
-    `).join('');
-  }catch(e){
-    listEl.innerHTML = emptyState('読み込みに失敗しました', 'ページを再読み込みしてお試しください。');
+        <div id="${cfg.key}Banner" class="puzzle-banner hidden"></div>
+        <div class="puzzle-actions">
+          <button class="btn ghost small" id="${cfg.key}AddBtn">＋ 候補を追加・管理</button>
+          <button class="btn ghost small" id="${cfg.key}ResetBtn">🔄 シャッフルしてやり直す</button>
+        </div>
+      </div>
+    `;
+    $('#'+cfg.key+'ResetBtn').addEventListener('click', initRound);
+    $('#'+cfg.key+'AddBtn').addEventListener('click', openAddModal);
+    renderCards();
   }
-}
 
-/* ===================== 3. 質問掲示板 ===================== */
-let currentPostId = null;
+  function renderCards(){
+    const leftCol = $('#'+cfg.key+'LeftCol');
+    const rightCol = $('#'+cfg.key+'RightCol');
+    if(!leftCol || !rightCol) return;
 
-async function loadPosts(){
-  const listEl = $('#postList');
-  updateBoardSyncStatus();
-  try{
-    const posts = await boardListPosts();
-    if(posts.length===0){
-      listEl.innerHTML = emptyState('まだ質問の投稿がありません', '「＋質問を投稿」から接客で困った状況を共有してみましょう。');
-      $('#postDetail').classList.add('hidden');
-      listEl.classList.remove('hidden');
+    leftCol.innerHTML = leftOrder.map(id=>{
+      const d = byId(id);
+      const m = matched.has(id);
+      return `<div class="puzzle-card vehicle ${m?'matched':''}" data-id="${id}" data-side="left" data-game="${cfg.key}">
+        <div class="vehicle-icon">${vehicleIconSvg(d.vehicleType)}</div>
+        <div class="vehicle-label">${escapeHtml(d.left)}${d.leftExample ? '<span class="ex">'+escapeHtml(d.leftExample)+'</span>' : ''}</div>
+      </div>`;
+    }).join('');
+
+    rightCol.innerHTML = rightOrder.map(id=>{
+      const d = byId(id);
+      const m = matched.has(id);
+      return `<div class="puzzle-card tire ${m?'matched':''}" data-id="${id}" data-side="right" data-game="${cfg.key}">
+        ${escapeHtml(d.right)}
+      </div>`;
+    }).join('');
+
+    $('#'+cfg.key+'Score').textContent = `${matched.size} / ${allData().length} マッチ`;
+
+    $$('.puzzle-card.vehicle', leftCol).forEach(el=>{
+      if(el.classList.contains('matched')) return;
+      el.addEventListener('pointerdown', (e)=> startDrag(e, el));
+    });
+
+    requestAnimationFrame(drawMatchedLines);
+
+    if(matched.size === allData().length){
+      setTimeout(showComplete, 250);
+    }
+  }
+
+  function getBoardRect(){ return $('#'+cfg.key+'Board').getBoundingClientRect(); }
+  function cardAnchor(el, side){
+    const r = el.getBoundingClientRect();
+    const boardRect = getBoardRect();
+    const x = side==='left' ? (r.right - boardRect.left) : (r.left - boardRect.left);
+    const y = (r.top + r.height/2) - boardRect.top;
+    return { x, y };
+  }
+  function drawMatchedLines(){
+    const svg = $('#'+cfg.key+'Svg');
+    if(!svg) return;
+    const boardRect = getBoardRect();
+    svg.setAttribute('width', boardRect.width);
+    svg.setAttribute('height', boardRect.height);
+    svg.innerHTML = '';
+    matched.forEach(id=>{
+      const leftEl = document.querySelector(`.puzzle-card[data-game="${cfg.key}"][data-side="left"][data-id="${id}"]`);
+      const rightEl = document.querySelector(`.puzzle-card[data-game="${cfg.key}"][data-side="right"][data-id="${id}"]`);
+      if(!leftEl || !rightEl) return;
+      const a = cardAnchor(leftEl,'left');
+      const b = cardAnchor(rightEl,'right');
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',a.x); line.setAttribute('y1',a.y);
+      line.setAttribute('x2',b.x); line.setAttribute('y2',b.y);
+      line.setAttribute('stroke','#16a34a');
+      line.setAttribute('stroke-width','2.5');
+      line.setAttribute('stroke-linecap','round');
+      svg.appendChild(line);
+    });
+  }
+
+  function startDrag(e, el){
+    e.preventDefault();
+    const id = el.dataset.id;
+    el.setPointerCapture(e.pointerId);
+    const anchor = cardAnchor(el, 'left');
+    el.classList.add('dragging');
+
+    const svg = $('#'+cfg.key+'Svg');
+    const tempLine = document.createElementNS('http://www.w3.org/2000/svg','line');
+    tempLine.setAttribute('id', cfg.key+'TempDragLine');
+    tempLine.setAttribute('x1',anchor.x); tempLine.setAttribute('y1',anchor.y);
+    tempLine.setAttribute('x2',anchor.x); tempLine.setAttribute('y2',anchor.y);
+    tempLine.setAttribute('stroke','#2f6fed');
+    tempLine.setAttribute('stroke-width','2.5');
+    tempLine.setAttribute('stroke-dasharray','6 4');
+    tempLine.setAttribute('stroke-linecap','round');
+    svg.appendChild(tempLine);
+
+    const onMove = (ev)=>{
+      const boardRect = getBoardRect();
+      const x = ev.clientX - boardRect.left;
+      const y = ev.clientY - boardRect.top;
+      const line = $('#'+cfg.key+'TempDragLine');
+      if(line){ line.setAttribute('x2',x); line.setAttribute('y2',y); }
+    };
+    const onUp = (ev)=>{
+      el.classList.remove('dragging');
+      const line = $('#'+cfg.key+'TempDragLine');
+      if(line) line.remove();
+      el.removeEventListener('pointermove', onMove);
+      el.removeEventListener('pointerup', onUp);
+      el.removeEventListener('pointercancel', onUp);
+
+      const target = document.elementFromPoint(ev.clientX, ev.clientY);
+      const targetCard = target ? target.closest(`.puzzle-card.tire[data-game="${cfg.key}"]`) : null;
+      if(targetCard && !targetCard.classList.contains('matched')){
+        evaluateMatch(id, targetCard.dataset.id, targetCard);
+      }
+    };
+
+    el.addEventListener('pointermove', onMove);
+    el.addEventListener('pointerup', onUp);
+    el.addEventListener('pointercancel', onUp);
+  }
+
+  function evaluateMatch(leftId, rightId, rightEl){
+    if(leftId === rightId){
+      matched.add(leftId);
+      showBanner(true, byId(leftId));
+      renderCards();
+    } else {
+      rightEl.classList.add('wrong-flash');
+      setTimeout(()=>rightEl.classList.remove('wrong-flash'), 450);
+      showBanner(false);
+    }
+  }
+
+  function showBanner(correct, data){
+    const el = $('#'+cfg.key+'Banner');
+    if(!el) return;
+    el.classList.remove('hidden');
+    if(correct){
+      el.style.background = 'var(--good-soft)';
+      el.style.borderColor = '#bfe6cc';
+      el.innerHTML = `
+        <div class="ping" style="color:var(--good);">ピンポン！ 🎉</div>
+        <p><strong>${escapeHtml(data.left)}</strong>${data.leftExample ? '（'+escapeHtml(data.leftExample)+'）' : ''}には <strong>${escapeHtml(data.right)}</strong> がぴったりです。${escapeHtml(data.reason)}</p>
+      `;
+    } else {
+      el.style.background = 'var(--warn-soft)';
+      el.style.borderColor = '#f6c9c2';
+      el.innerHTML = `
+        <div class="ping" style="color:var(--warn);">ブー…もう一度！</div>
+        <p>その組み合わせは違うようです。もう一度つないでみましょう。</p>
+      `;
+    }
+  }
+
+  function showComplete(){
+    const el = $('#'+cfg.key+'Banner');
+    if(!el) return;
+    el.classList.remove('hidden');
+    el.style.background = 'var(--primary-soft)';
+    el.style.borderColor = '#c8dbfc';
+    el.innerHTML = `
+      <div class="ping" style="color:var(--primary);">🎊 コンプリート！</div>
+      <p>全ての組み合わせを正解しました。「シャッフルしてやり直す」でもう一度挑戦できます。</p>
+    `;
+  }
+
+  function openAddModal(){
+    const bg = document.createElement('div');
+    bg.className = 'modal-bg';
+    let selectedType = null;
+    bg.innerHTML = `
+      <div class="modal">
+        <h3>候補を追加・管理</h3>
+        <div class="field">
+          <label>車種タイプを選択</label>
+          <div class="icon-picker" id="${cfg.key}IconPicker">
+            ${VEHICLE_TYPES.map(v => `
+              <button type="button" class="icon-pick-btn" data-key="${v.key}">
+                <div class="icon-pick-svg">${v.icon}</div>
+                <div class="icon-pick-label">${escapeHtml(v.label)}</div>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+        <div class="field">
+          <label>具体的な車種名（任意）</label>
+          <input id="${cfg.key}AddLeftEx" type="text" maxlength="30" placeholder="例：アルファードなど">
+        </div>
+        <div class="field">
+          <label>${escapeHtml(cfg.addLabels.right)}</label>
+          <input id="${cfg.key}AddRight" type="text" maxlength="30" placeholder="${escapeHtml(cfg.addLabels.rightPlaceholder)}">
+        </div>
+        <div class="field">
+          <label>正解理由（正解時にAI風コメントとして表示）</label>
+          <textarea id="${cfg.key}AddReason" rows="3" maxlength="200" placeholder="例：…"></textarea>
+        </div>
+        <div class="modal-actions" style="justify-content:flex-start;">
+          <button class="btn" id="${cfg.key}AddSaveBtn">この候補を追加する</button>
+        </div>
+
+        <hr class="divider">
+        <p class="section-title">追加した候補（削除できます）</p>
+        <div id="${cfg.key}CustomList" style="display:flex;flex-direction:column;gap:8px;"></div>
+
+        <div class="modal-actions">
+          <button class="btn ghost" id="${cfg.key}AddCloseBtn">閉じる</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(bg);
+    bg.addEventListener('click', (e)=>{ if(e.target===bg) bg.remove(); });
+    $('#'+cfg.key+'AddCloseBtn', bg).addEventListener('click', ()=>bg.remove());
+
+    $$('.icon-pick-btn', bg).forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        $$('.icon-pick-btn', bg).forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedType = btn.dataset.key;
+      });
+    });
+
+    $('#'+cfg.key+'AddSaveBtn', bg).addEventListener('click', async ()=>{
+      const leftExample = $('#'+cfg.key+'AddLeftEx', bg).value.trim();
+      const right = $('#'+cfg.key+'AddRight', bg).value.trim();
+      const reason = $('#'+cfg.key+'AddReason', bg).value.trim();
+      if(!selectedType){ showToast('車種タイプを選んでください'); return; }
+      if(!right){ showToast(`${cfg.addLabels.right}は必須です`); return; }
+      const left = vehicleTypeLabel(selectedType);
+      const item = {
+        id: cfg.key+'_custom_'+uid(),
+        vehicleType: selectedType,
+        left, leftExample: leftExample || '',
+        right, reason: reason || `${left}には${right}が適合します。`
+      };
+      try{
+        await saveCustomItem(item);
+        showToast('候補を追加しました');
+        $$('.icon-pick-btn', bg).forEach(b=>b.classList.remove('selected'));
+        selectedType = null;
+        $('#'+cfg.key+'AddLeftEx', bg).value = '';
+        $('#'+cfg.key+'AddRight', bg).value = '';
+        $('#'+cfg.key+'AddReason', bg).value = '';
+        await refreshCustomList(bg);
+        await initRound();
+      }catch(e){
+        showToast('追加に失敗しました');
+      }
+    });
+
+    refreshCustomList(bg);
+  }
+
+  async function refreshCustomList(bg){
+    const listEl = $('#'+cfg.key+'CustomList', bg);
+    if(!listEl) return;
+    listEl.innerHTML = `<div style="font-size:12.5px;color:var(--text-faint);">読み込み中…</div>`;
+    let items = [];
+    try{ items = await listCustomItems(); }catch(e){ items = []; }
+    if(items.length===0){
+      listEl.innerHTML = `<div style="font-size:12.5px;color:var(--text-faint);">まだ追加した候補はありません。</div>`;
       return;
     }
-    posts.sort((a,b)=>b.timestamp-a.timestamp);
-    listEl.innerHTML = posts.map(p => `
-      <div class="post-item" data-id="${p.id}">
-        <h4>${escapeHtml(p.title)}</h4>
-        <p>${escapeHtml(p.body)}</p>
-        <div class="meta">
-          <span>投稿: ${escapeHtml(p.author)}</span>
-          <span>${fmtDate(p.timestamp)}</span>
-          <span>💬 ${(p.comments||[]).length}件</span>
+    listEl.innerHTML = items.map(it => `
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--surface-2);border-radius:8px;padding:8px 12px;">
+        <div style="font-size:13px;">
+          <strong>${escapeHtml(it.left)}</strong>${it.leftExample ? '（'+escapeHtml(it.leftExample)+'）' : ''}
+          <span class="mono" style="color:var(--text-faint);"> → ${escapeHtml(it.right)}</span>
         </div>
+        <button class="icon-btn ${cfg.key}-del" data-id="${it.id}" title="削除">✕</button>
       </div>
     `).join('');
-    $$('.post-item', listEl).forEach(el=>{
-      el.addEventListener('click', ()=>openPostDetail(el.dataset.id));
+    $$('.'+cfg.key+'-del', listEl).forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        try{
+          await deleteCustomItem(btn.dataset.id);
+          showToast('削除しました');
+          await refreshCustomList(bg);
+          await initRound();
+        }catch(e){ showToast('削除に失敗しました'); }
+      });
     });
-  }catch(e){
-    listEl.innerHTML = emptyState('読み込みに失敗しました', 'ページを再読み込みしてお試しください。');
-  }
-}
-
-async function openPostDetail(id){
-  currentPostId = id;
-  $('#postList').classList.add('hidden');
-  $('#postDetail').classList.remove('hidden');
-  await renderPostDetail();
-}
-
-async function renderPostDetail(){
-  let post;
-  try{
-    post = await boardGetPost(currentPostId);
-  }catch(e){ post = null; }
-
-  if(!post){
-    $('#postDetail').innerHTML = `<button class="back-btn" id="backBoardBtn">← 一覧に戻る</button><div class="empty">投稿が見つかりませんでした。</div>`;
-    $('#backBoardBtn').addEventListener('click', backToPostList);
-    return;
   }
 
-  const comments = post.comments || [];
-  $('#postDetail').innerHTML = `
-    <button class="back-btn" id="backBoardBtn">← 一覧に戻る</button>
-    <div class="card">
-      <h3 style="font-size:18px;margin:0 0 8px;font-weight:700;">${escapeHtml(post.title)}</h3>
-      <div class="meta mono" style="color:var(--text-faint);font-size:11.5px;margin-bottom:14px;">投稿: ${escapeHtml(post.author)} ・ ${fmtDate(post.timestamp)}</div>
-      <p style="font-size:14.5px;line-height:1.8;color:var(--text-dim);margin:0;white-space:pre-wrap;">${escapeHtml(post.body)}</p>
+  window.addEventListener('resize', ()=>{ if($('#'+cfg.key+'Board')) drawMatchedLines(); });
 
-      <hr class="divider">
-
-      <p class="section-title">コメント（${comments.length}）</p>
-      <div class="comment-list" id="commentList">
-        ${comments.length ? comments.map(c=>`
-          <div class="comment">
-            <div class="c-meta"><span>${escapeHtml(c.author)}</span><span>${fmtDate(c.timestamp)}</span></div>
-            <p>${escapeHtml(c.text)}</p>
-          </div>
-        `).join('') : `<div style="color:var(--text-faint);font-size:13px;">まだコメントはありません。最初の回答者になりましょう。</div>`}
-      </div>
-
-      <div class="field" style="margin-top:18px;">
-        <label>コメントを追加</label>
-        <textarea id="commentInput" rows="3" placeholder="回答やアドバイスを入力…"></textarea>
-      </div>
-      <div class="modal-actions" style="justify-content:flex-start;">
-        <button class="btn" id="submitCommentBtn">コメントを送信</button>
-      </div>
-    </div>
-  `;
-
-  $('#backBoardBtn').addEventListener('click', backToPostList);
-  $('#submitCommentBtn').addEventListener('click', async ()=>{
-    const text = $('#commentInput').value.trim();
-    if(!text){ showToast('コメント内容を入力してください'); return; }
-    post.comments = post.comments || [];
-    post.comments.push({ author: getStaffName(), text, timestamp: Date.now() });
-    try{
-      await boardSavePost(post);
-      showToast('コメントを投稿しました');
-      renderPostDetail();
-    }catch(e){ showToast('投稿に失敗しました'); }
-  });
+  return { initRound };
 }
 
-function backToPostList(){
-  $('#postDetail').classList.add('hidden');
-  $('#postList').classList.remove('hidden');
-  loadPosts();
-}
-
-$('#newPostBtn').addEventListener('click', ()=>{
-  const bg = document.createElement('div');
-  bg.className = 'modal-bg';
-  bg.innerHTML = `
-    <div class="modal">
-      <h3>質問・状況を投稿</h3>
-      <div class="field">
-        <label>タイトル</label>
-        <input id="newTitle" type="text" maxlength="60" placeholder="例：クレーム対応でお客様が納得しない">
-      </div>
-      <div class="field">
-        <label>内容</label>
-        <textarea id="newBody" rows="5" placeholder="状況や困っていることを具体的に書きましょう"></textarea>
-      </div>
-      <div class="modal-actions">
-        <button class="btn ghost" id="cancelPostBtn">キャンセル</button>
-        <button class="btn" id="submitPostBtn">投稿する</button>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(bg);
-  $('#cancelPostBtn', bg).addEventListener('click', ()=>bg.remove());
-  bg.addEventListener('click', (e)=>{ if(e.target===bg) bg.remove(); });
-  $('#submitPostBtn', bg).addEventListener('click', async ()=>{
-    const title = $('#newTitle', bg).value.trim();
-    const body = $('#newBody', bg).value.trim();
-    if(!title || !body){ showToast('タイトルと内容を入力してください'); return; }
-    const post = { id: uid(), title, body, author: getStaffName(), timestamp: Date.now(), comments: [] };
-    try{
-      await boardSavePost(post);
-      bg.remove();
-      showToast('質問を投稿しました');
-      loadPosts();
-    }catch(e){ showToast('投稿に失敗しました'); }
-  });
+/* タイヤ・マッチングパズル */
+const tireGame = createMatchingGame({
+  key: 'tire',
+  containerId: 'puzzleContainer',
+  icon: '🧩',
+  title: 'タイヤ・マッチングパズル',
+  subtitle: '車種カードを、あうタイヤサイズカードまで指でドラッグしてつなげてみましょう',
+  leftColLabel: '車種',
+  rightColLabel: 'タイヤサイズ',
+  itemNoun: 'パズル候補',
+  firestoreCollection: 'puzzle-items',
+  storagePrefixItem: 'puzzle-item:',
+  addLabels: {
+    right:'正解のタイヤサイズ', rightPlaceholder:'例：225/60R18'
+  },
+  builtinData: [
+    { id:'kei', vehicleType:'kei', left:'軽自動車', leftExample:'N-BOXなど', right:'155/65R14',
+      reason:'車両重量が軽く必要な負荷能力も小さいため、幅155mm・扁平率65%・14インチという軽量コンパクトなサイズで、燃費と価格のバランスが取れます。' },
+    { id:'compact', vehicleType:'compact', left:'コンパクトカー', leftExample:'フィットなど', right:'185/55R16',
+      reason:'車重・出力とも中程度のコンパクトカーには、幅185mm・扁平率55%・16インチが定番。乗り心地とハンドリングのバランスに優れます。' },
+    { id:'suv', vehicleType:'suv', left:'SUV', leftExample:'ハリアーなど', right:'225/65R17',
+      reason:'車重が重く車高も高いSUVは、幅225mm・扁平率65%・17インチのタイヤで十分な荷重能力と走行安定性を確保しています。' }
+  ]
 });
 
-$('#boardSettingsBtn').addEventListener('click', openBoardSettingsModal);
+/* ホイール・マッチングパズル */
+const wheelGame = createMatchingGame({
+  key: 'wheel',
+  containerId: 'wheelPuzzleContainer',
+  icon: '⚙️',
+  title: 'ホイール・マッチングパズル',
+  subtitle: '車種カードを、あうホイールサイズカードまで指でドラッグしてつなげてみましょう',
+  leftColLabel: '車種',
+  rightColLabel: 'ホイールサイズ',
+  itemNoun: 'ホイール候補',
+  firestoreCollection: 'wheel-items',
+  storagePrefixItem: 'wheel-item:',
+  addLabels: {
+    right:'正解のホイールサイズ', rightPlaceholder:'例：18インチ'
+  },
+  builtinData: [
+    { id:'kei', vehicleType:'kei', left:'軽自動車', leftExample:'N-BOXなど', right:'14インチ',
+      reason:'軽自動車は車重が軽く、ホイールも軽量・安価な14インチが標準的。乗り心地と価格のバランスが良い組み合わせです。' },
+    { id:'compact', vehicleType:'compact', left:'コンパクトカー', leftExample:'フィットなど', right:'16インチ',
+      reason:'コンパクトカーには16インチが定番。デザイン性とタイヤの選択肢の広さ、乗り心地のバランスに優れます。' },
+    { id:'suv', vehicleType:'suv', left:'SUV', leftExample:'ハリアーなど', right:'17インチ',
+      reason:'車重があり車高も高いSUVには17インチが標準的で、荷重能力と走行安定性、デザイン性を両立しています。' }
+  ]
+});
+
 
 /* ===================== 初期化 ===================== */
 (async function init(){
@@ -1073,11 +1363,10 @@ $('#boardSettingsBtn').addEventListener('click', openBoardSettingsModal);
   await loadAiQuizBank();
   renderQuizList();
 
-  renderPracticeForm();
-  await loadPracticeEntries();
+  renderTutorChat();
 
-  await initFirebase();
-  await loadPosts();
+  await tireGame.initRound();
+  await wheelGame.initRound();
 })();
 </script>
 </body>
