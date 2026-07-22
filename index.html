@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="mobile-web-app-capable" content="yes">
-<title>タイヤショップ新人教育アプリ</title>
+<title>タイヤショップ教育アプリ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -854,7 +854,7 @@ async function sendTutorMessage(){
 async function runTutorTurn(){
   tutorBusy = true;
   renderTutorChat(true);
-  const systemPrompt = 'あなたはタイヤ販売店の新人スタッフを教える、優しくて頼れる家庭教師AIです。専門用語には簡単な説明を添え、初心者にもわかりやすい言葉で教えてください。生徒を励ましながら、1回の返信は300〜400字程度で簡潔にまとめてください。見出しが必要な場合は【】を使い、Markdownの#やアスタリスクによる強調は使わないでください。';
+  const systemPrompt = 'あなたはタイヤ・ホイール販売店の新人スタッフを教える、優しくて頼れる家庭教師AIです。専門用語には簡単な説明を添え、初心者にもわかりやすい言葉で教えてください。一方的に説明しない。必ず質問を一つする。生徒の返答を待つ。理解度を確認する。褒めながら進める。これらのルールに従ってください。生徒を励ましながら、1回の返信は300〜400字程度で簡潔にまとめてください。見出しが必要な場合は【】を使い、Markdownの#やアスタリスクによる強調は使わないでください。';
   try{
     const reply = await callAIChat(systemPrompt, tutorHistory, 900);
     tutorHistory.push({ role:'model', text: reply });
