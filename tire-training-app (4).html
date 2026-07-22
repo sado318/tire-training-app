@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="mobile-web-app-capable" content="yes">
+<title>タイヤショップ新人教育アプリ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f7f9;
+  --surface:#ffffff;
+  --surface-2:#f1f3f5;
+  --surface-3:#e8eaed;
+  --border:#e3e6ea;
+  --border-strong:#d4d8dd;
+  --primary:#2f6fed;
+  --primary-ink:#ffffff;
+  --primary-soft:#eaf1fe;
+  --ai:#7c4dea;
+  --ai-soft:#f2eefd;
+  --warn:#dc2626;
+  --warn-soft:#fdecec;
+  --good:#16a34a;
+  --good-soft:#eaf7ee;
+  --text:#1a1d21;
+  --text-dim:#5b6168;
+  --text-faint:#8f959c;
+  --shadow: 0 1px 2px rgba(20,22,25,.04), 0 1px 8px rgba(20,22,25,.04);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:'IBM Plex Mono',monospace;}
+
+#app{max-width:1120px;margin:0 auto;padding:0 0 90px;}
+
+/* header */
+header.top{
+  padding:26px 28px 0;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+}
+header.top .headwrap{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  padding-bottom:20px;
+}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand .logo{
+  width:38px;height:38px;border-radius:10px;
+  background:var(--primary);color:#fff;
+  display:flex;align-items:center;justify-content:center;flex:none;
+}
+.brand .logo svg{width:20px;height:20px;}
+header.top h1{font-size:19px;margin:0;line-height:1.3;font-weight:700;color:var(--text);}
+header.top p.sub{margin:2px 0 0;color:var(--text-faint);font-size:13px;}
+.staffbox{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:7px 12px;}
+.staffbox label{font-size:12px;color:var(--text-faint);white-space:nowrap;}
+.staffbox input{background:transparent;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:13.5px;width:110px;outline:none;}
+
+nav.tabs{display:flex;gap:4px;margin-top:2px;}
+nav.tabs button{
+  appearance:none;border:none;background:none;cursor:pointer;
+  color:var(--text-faint);font-family:'Inter',sans-serif;font-weight:600;font-size:14px;
+  display:flex;align-items:center;gap:7px;
+  padding:11px 14px;
+  border-bottom:2px solid transparent;
+  transition:color .15s ease;
+}
+nav.tabs button svg{width:16px;height:16px;flex:none;}
+nav.tabs button:hover{color:var(--text);}
+nav.tabs button.active{color:var(--primary);border-bottom-color:var(--primary);}
+
+main{padding:28px;}
+.hidden{display:none !important;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;box-shadow:var(--shadow);}
+.grid{display:grid;gap:12px;}
+.q-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr));}
+
+.q-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:11px;
+  padding:16px 16px 14px;cursor:pointer;
+  transition:border-color .15s ease, box-shadow .15s ease;
+  position:relative;
+}
+.q-card:hover{border-color:var(--primary);box-shadow:var(--shadow);}
+.q-card.ai-card:hover{border-color:var(--ai);}
+.q-card.ai-card{border-top:3px solid var(--ai);}
+.q-card:not(.ai-card){border-top:3px solid var(--primary-soft);}
+.q-card .qnum{font-size:12px;color:var(--text-faint);display:flex;align-items:center;gap:8px;}
+.q-card h3{font-size:14.5px;line-height:1.5;margin:8px 0 12px;font-weight:600;color:var(--text);}
+.status-pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;padding:4px 10px;border-radius:20px;font-weight:600;}
+.status-pill.unanswered{background:var(--surface-2);color:var(--text-faint);}
+.status-pill.correct{background:var(--good-soft);color:var(--good);}
+.status-pill.incorrect{background:var(--warn-soft);color:var(--warn);}
+.ai-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--ai);background:var(--ai-soft);padding:3px 9px;border-radius:20px;}
+
+.progress-row{display:flex;align-items:center;gap:12px;margin-bottom:22px;}
+.progress-track{flex:1;height:8px;background:var(--surface-3);border-radius:20px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--primary);border-radius:20px;transition:width .3s ease;}
+.progress-label{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);white-space:nowrap;}
+
+.section-title{font-size:13px;font-weight:700;color:var(--text-dim);margin:0 0 12px;display:flex;align-items:center;gap:8px;}
+.section-head-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:34px 0 12px;}
+
+.back-btn{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:6px;margin-bottom:16px;padding:0;}
+.back-btn:hover{color:var(--primary);}
+.detail-q{font-size:18px;line-height:1.6;margin:0 0 20px;font-weight:700;}
+.choice-list{display:flex;flex-direction:column;gap:9px;}
+.choice{display:flex;align-items:center;gap:12px;border:1px solid var(--border);background:var(--surface);border-radius:10px;padding:13px 16px;cursor:pointer;font-size:14.5px;transition:border-color .15s ease,background .15s ease;}
+.choice:hover:not(.locked){border-color:var(--primary);background:var(--primary-soft);}
+.choice .letter{flex:none;width:24px;height:24px;border-radius:50%;background:var(--surface-2);color:var(--text-dim);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.choice.chosen-correct{border-color:var(--good);background:var(--good-soft);}
+.choice.chosen-correct .letter{background:var(--good);color:#fff;}
+.choice.chosen-wrong{border-color:var(--warn);background:var(--warn-soft);}
+.choice.chosen-wrong .letter{background:var(--warn);color:#fff;}
+.choice.reveal-correct{border-color:var(--good);}
+.choice.reveal-correct .letter{background:var(--good);color:#fff;}
+
+.explain-box{margin-top:20px;padding:16px 18px;border-radius:10px;background:var(--primary-soft);border-left:3px solid var(--primary);}
+.explain-box.ai{background:var(--ai-soft);border-left-color:var(--ai);}
+.explain-box .tag{font-size:11.5px;font-weight:700;color:var(--primary);margin-bottom:8px;display:block;}
+.explain-box.ai .tag{color:var(--ai);}
+.explain-box p{margin:0;font-size:14px;line-height:1.7;color:var(--text-dim);}
+.next-row{display:flex;justify-content:flex-end;margin-top:20px;}
+
+.btn{font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;background:var(--primary);color:var(--primary-ink);border:none;border-radius:8px;padding:10px 18px;cursor:pointer;transition:filter .15s ease, box-shadow .15s ease;}
+.btn:hover{filter:brightness(1.06);}
+.btn.ghost{background:transparent;border:1px solid var(--border-strong);color:var(--text);}
+.btn.ghost:hover{border-color:var(--primary);color:var(--primary);}
+.btn.ai-btn{background:var(--ai);}
+.btn:disabled{opacity:.5;cursor:not-allowed;filter:none;}
+.btn.danger{background:var(--warn);color:#fff;}
+.btn.small{padding:7px 13px;font-size:12.5px;}
+.icon-btn{
+  background:none;border:1px solid var(--border-strong);color:var(--text-faint);border-radius:7px;
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;
+  font-size:13px;transition:border-color .15s ease, color .15s ease;
+}
+.icon-btn:hover{border-color:var(--warn);color:var(--warn);}
+
+.spinner{width:13px;height:13px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;display:inline-block;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:7px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* タイヤ・マッチングパズル */
+.puzzle-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.puzzle-score{background:var(--surface-2);padding:6px 14px;border-radius:20px;font-size:12.5px;color:var(--text-dim);white-space:nowrap;}
+.puzzle-board{position:relative;display:flex;justify-content:space-between;gap:5%;min-height:220px;}
+.puzzle-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+.puzzle-col{display:flex;flex-direction:column;gap:12px;width:46%;position:relative;z-index:1;}
+.puzzle-col-label{font-size:11.5px;font-weight:700;color:var(--text-faint);text-align:center;margin-bottom:2px;}
+.puzzle-card{
+  background:var(--surface);border:2px solid var(--border-strong);border-radius:12px;
+  padding:14px 12px;cursor:grab;user-select:none;touch-action:none;
+  transition:border-color .15s ease, background .15s ease, transform .12s ease, opacity .2s ease;
+  font-weight:700;font-size:14px;text-align:center;
+}
+.puzzle-card.vehicle{border-color:var(--primary-soft);}
+.puzzle-card.tire{border-color:var(--ai-soft);font-family:'IBM Plex Mono',monospace;font-size:15px;cursor:default;}
+.puzzle-card .ex{display:block;font-size:11px;font-weight:400;color:var(--text-faint);margin-top:3px;}
+.puzzle-card.vehicle{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.vehicle-icon{width:42px;height:28px;color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto;}
+.vehicle-icon svg{width:100%;height:100%;}
+.vehicle-label{text-align:center;}
+
+.icon-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.icon-pick-btn{border:2px solid var(--border-strong);border-radius:10px;background:var(--surface);padding:10px 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:border-color .15s ease, background .15s ease;}
+.icon-pick-btn:hover{border-color:var(--primary);}
+.icon-pick-btn.selected{border-color:var(--primary);background:var(--primary-soft);}
+.icon-pick-svg{width:30px;height:20px;color:var(--text-dim);display:flex;align-items:center;justify-content:center;}
+.icon-pick-svg svg{width:100%;height:100%;}
+.icon-pick-btn.selected .icon-pick-svg{color:var(--primary);}
+.icon-pick-label{font-size:11px;color:var(--text-dim);text-align:center;line-height:1.3;}
+
+/* AI家庭教師 */
+.tutor-card{display:flex;flex-direction:column;}
+.tutor-chat-log{
+  display:flex;flex-direction:column;gap:12px;
+  min-height:220px;max-height:52vh;overflow-y:auto;
+  padding:4px 2px;margin-bottom:10px;
+}
+.tutor-empty{
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  text-align:center;padding:30px 10px;color:var(--text-dim);
+}
+.tutor-empty p{margin:0;font-size:13px;line-height:1.7;max-width:420px;}
+.tutor-msg{max-width:85%;}
+.tutor-msg.ai{align-self:flex-start;}
+.tutor-msg.user{align-self:flex-end;}
+.tutor-msg-label{font-size:11px;font-weight:700;color:var(--text-faint);margin-bottom:4px;}
+.tutor-msg.user .tutor-msg-label{text-align:right;}
+.tutor-msg-body{
+  white-space:pre-wrap;font-size:13.5px;line-height:1.75;padding:10px 14px;border-radius:12px;
+}
+.tutor-msg.ai .tutor-msg-body{background:var(--ai-soft);border:1px solid #ded3fb;color:var(--text);border-top-left-radius:3px;}
+.tutor-msg.user .tutor-msg-body{background:var(--primary-soft);color:var(--text);border-top-right-radius:3px;}
+.tutor-msg.loading .tutor-msg-body{display:flex;align-items:center;color:var(--text-dim);}
+.tutor-start-row{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.tutor-input-row{display:flex;gap:10px;align-items:flex-end;}
+.tutor-input-row textarea{
+  flex:1;background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;
+  padding:10px 13px;font-family:'Inter',sans-serif;font-size:14px;resize:none;line-height:1.6;
+}
+.tutor-input-row textarea:focus{outline:none;border-color:var(--ai);box-shadow:0 0 0 3px var(--ai-soft);}
+.tutor-input-row .btn{flex:none;}
+.puzzle-card.dragging{opacity:.45;transform:scale(.97);}
+.puzzle-card.matched{border-color:var(--good);background:var(--good-soft);cursor:default;opacity:.8;}
+.puzzle-card.wrong-flash{border-color:var(--warn);background:var(--warn-soft);animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+
+.puzzle-banner{margin-top:18px;padding:15px 18px;border-radius:10px;border:1px solid var(--border);}
+.puzzle-banner.hidden{display:none;}
+.puzzle-banner .ping{font-weight:800;font-size:15px;margin-bottom:5px;}
+.puzzle-banner p{margin:0;font-size:13.5px;line-height:1.75;color:var(--text-dim);}
+.puzzle-actions{margin-top:18px;display:flex;justify-content:flex-end;}
+
+/* practice tab */
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12.5px;color:var(--text-faint);margin-bottom:6px;font-weight:600;}
+.field input,.field textarea{width:100%;background:var(--surface);border:1px solid var(--border-strong);border-radius:8px;color:var(--text);padding:10px 13px;font-family:'Inter',sans-serif;font-size:14px;resize:vertical;}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft);}
+.field textarea{line-height:1.7;}
+.char-count{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-faint);text-align:right;margin-top:4px;}
+
+.feedback-card{margin-top:18px;padding:18px 20px;border-radius:10px;background:var(--ai-soft);border:1px solid #ded3fb;}
+.feedback-card .tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ai);margin-bottom:10px;}
+.feedback-card .body-text{white-space:pre-wrap;font-size:14px;line-height:1.85;color:var(--text);}
+
+.entry-list{display:flex;flex-direction:column;gap:10px;margin-top:6px;}
+details.entry{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow);}
+details.entry[open]{border-color:var(--ai);}
+details.entry summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+details.entry summary::-webkit-details-marker{display:none;}
+details.entry summary h4{margin:0 0 4px;font-size:14.5px;font-weight:600;}
+details.entry .meta{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--text-faint);}
+.entry-body{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.entry-body .label{font-size:11px;font-weight:700;color:var(--text-faint);margin-bottom:6px;}
+.entry-body .orig-text{white-space:pre-wrap;font-size:13.5px;line-height:1.7;color:var(--text-dim);background:var(--surface-2);border-radius:8px;padding:12px 14px;margin-bottom:14px;}
+
+.modal-bg{position:fixed;inset:0;background:rgba(20,22,25,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;width:100%;max-width:460px;max-height:86vh;overflow-y:auto;box-shadow:0 10px 40px rgba(20,22,25,.18);}
+.modal h3{margin:0 0 14px;font-size:16.5px;font-weight:700;}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:6px;}
+
+.empty{padding:44px 20px;text-align:center;color:var(--text-faint);}
+.empty svg{width:32px;height:32px;margin-bottom:10px;opacity:.5;}
+
+.divider{height:1px;background:var(--border);margin:20px 0;border:none;}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:10px 18px;border-radius:30px;font-size:13px;font-weight:500;z-index:80;opacity:0;pointer-events:none;transition:opacity .2s ease, transform .2s ease;box-shadow:0 8px 24px rgba(0,0,0,.18);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+
+@media (max-width:640px){
+  header.top{padding:18px 16px 0;}
+  main{padding:16px;}
+  nav.tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  nav.tabs::-webkit-scrollbar{display:none;}
+  .staffbox input{width:80px;}
+
+  .card{padding:16px;}
+
+  /* パズル：カード内の余白・文字サイズを詰めて、狭い画面でも横並びを維持 */
+  .puzzle-board{gap:3%;}
+  .puzzle-col{width:48.5%;}
+  .puzzle-card{padding:10px 6px;font-size:12.5px;}
+  .puzzle-card .ex{font-size:10px;}
+  .vehicle-icon{width:34px;height:23px;}
+  .puzzle-header{gap:8px;}
+  .puzzle-score{font-size:11.5px;padding:5px 10px;}
+  .puzzle-actions{flex-direction:column;}
+  .puzzle-actions .btn{width:100%;}
+
+  /* 候補追加モーダルのアイコンピッカーを2列に */
+  .icon-picker{grid-template-columns:repeat(2,1fr);}
+
+  /* AI家庭教師：入力欄とボタンを縦積みにしてタップしやすく */
+  .tutor-input-row{flex-direction:column;align-items:stretch;}
+  .tutor-input-row .btn{width:100%;}
+  .tutor-msg{max-width:94%;}
+  .tutor-chat-log{max-height:44vh;}
+
+  /* クイズ：選択肢や見出しの余白を調整 */
+  .q-grid{grid-template-columns:1fr;}
+  .detail-q{font-size:16.5px;}
+  .choice{padding:12px 14px;font-size:14px;}
+
+  .modal{padding:18px;}
+  .section-head-row{margin:26px 0 12px;}
+}
+
+@media (max-width:400px){
+  .vehicle-icon{width:30px;height:20px;}
+  .puzzle-card{font-size:11.5px;padding:8px 4px;}
+  header.top h1{font-size:17px;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header class="top">
+    <div class="headwrap">
+      <div class="brand">
+        <div class="logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div>
+          <h1>タイヤショップ 新人教育</h1>
+          <p class="sub">AIコーチと学ぶ研修アプリ</p>
+        </div>
+      </div>
+      <div class="staffbox">
+        <label>担当者名</label>
+        <input id="staffName" type="text" placeholder="例）山田" maxlength="12">
+      </div>
+      <!-- キー入力欄を追加 -->
+      <div class="staffbox">
+        <label>APIキー</label>
+        <input id="apiConfigKey" type="password" placeholder="Geminiキーを入力" maxlength="100">
+      </div>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button data-tab="quiz" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        クイズ
+      </button>
+      <button data-tab="practice">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        タイヤマッチング
+      </button>
+      <button data-tab="wheel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/><path d="M12 4v3M12 17v3M4 12h3M17 12h3M6.5 6.5l2 2M15.5 15.5l2 2M6.5 17.5l2-2M15.5 8.5l2-2"/></svg>
+        ホイールマッチング
+      </button>
+      <button data-tab="tutor">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>
+        AI家庭教師
+      </button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- QUIZ TAB -->
+    <section id="tab-quiz">
+      <div id="quizList"></div>
+      <div id="quizDetail" class="hidden"></div>
+    </section>
+
+    <!-- PRACTICE (タイヤ・マッチングパズル) TAB -->
+    <section id="tab-practice" class="hidden">
+      <div id="puzzleContainer"></div>
+    </section>
+
+    <!-- WHEEL (ホイール・マッチングパズル) TAB -->
+    <section id="tab-wheel" class="hidden">
+      <div id="wheelPuzzleContainer"></div>
+    </section>
+
+    <!-- TUTOR (AI家庭教師) TAB -->
+    <section id="tab-tutor" class="hidden">
+      <div class="card tutor-card">
+        <p class="section-title" style="margin-bottom:4px;">🎓 AI家庭教師</p>
+        <p style="font-size:12.5px;color:var(--text-dim);margin:0 0 14px;">クイズの苦手分野をAIが自動で見つけて、順番に解説します。合間にいつでも自由に質問できます。</p>
+        <div id="tutorChatLog" class="tutor-chat-log"></div>
+        <div id="tutorStartRow" class="tutor-start-row"></div>
+        <div class="tutor-input-row">
+          <textarea id="tutorInput" rows="2" placeholder="気になることを自由に質問できます…（Enterで送信、Shift+Enterで改行）"></textarea>
+          <button class="btn ai-btn" id="tutorSendBtn">送信</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+/* ===================== 共通ユーティリティ ===================== */
+const $ = (sel, root=document) => root.querySelector(sel);
+const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+function showToast(msg){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=>t.classList.remove('show'), 2400);
+}
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function getStaffName(){
+  const v = $('#staffName').value.trim();
+  return v || '匿名スタッフ';
+}
+$('#staffName').addEventListener('input', ()=>{
+  window.storage.set('my-name', $('#staffName').value.trim(), false).catch(()=>{});
+});
+(async function loadName(){
+  try{
+    const r = await window.storage.get('my-name', false);
+    if(r && r.value) $('#staffName').value = r.value;
+  }catch(e){}
+})();
+function fmtDate(ts){
+  const d = new Date(ts);
+  return `${d.getMonth()+1}/${d.getDate()} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+}
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+
+function emptyState(title, sub){
+  return `
+    <div class="empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>
+      <div style="font-size:14px;color:var(--text-dim);margin-bottom:4px;">${title}</div>
+      <div style="font-size:12.5px;">${sub}</div>
+    </div>
+  `;
+}
+// 昔のコードがエラーにならないようにする救済措置
+window.storage = {
+  get: (key) => Promise.resolve({ value: localStorage.getItem(key) }),
+  set: (key, val) => { localStorage.setItem(key, val); return Promise.resolve(); },
+  delete: (key) => { localStorage.removeItem(key); return Promise.resolve(); },
+  list: (prefix) => {
+    const keys = Object.keys(localStorage).filter(k => k.startsWith(prefix));
+    return Promise.resolve({ keys });
+  }
+};
+
+
+
+/* ===================== 設定とAI呼び出し（修正版） ===================== */
+// localStorageを使ってブラウザ内にAPIキーを保存
+const getApiKey = () => $('#apiConfigKey').value.trim();
+
+// 入力時に自動保存
+$('#apiConfigKey').addEventListener('input', () => {
+  localStorage.setItem('user-api-key', $('#apiConfigKey').value.trim());
+});
+
+// 読み込み時に復元
+(async function loadApiKey(){
+  const savedKey = localStorage.getItem('user-api-key');
+  if(savedKey) $('#apiConfigKey').value = savedKey;
+})();
+
+async function callAI(systemPrompt, userPrompt, maxTokens=1000, wantJson=false) {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    showToast('APIキーを入力してください');
+    throw new Error('APIキー未入力');
+  }
+
+  const generationConfig = { maxOutputTokens: maxTokens };
+  if (wantJson) {
+    // JSON強制モードは「クイズを配列で作ってほしい」時だけ使う。
+    // ロープレ講評など自由文がほしい場面でこれを付けると、
+    // 返答が丸ごとJSON文字列化されて \n やクオートがそのまま表示されてしまう。
+    generationConfig.responseMimeType = "application/json";
+  }
+
+  const url =`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      systemInstruction: {
+        parts: [{ text: systemPrompt }]
+      },
+      contents: [{
+        parts: [{
+          text: userPrompt
+        }]
+      }],
+      generationConfig
+    })
+  });
+
+  const data = await response.json();
+  if (data.error) {
+    showToast('エラー: ' + data.error.message);
+    throw new Error(data.error.message);
+  }
+  return data.candidates[0].content.parts[0].text.trim();
+}
+
+/* 複数ターンの会話用（AI家庭教師のチャットで使用） */
+async function callAIChat(systemPrompt, messages, maxTokens=900) {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    showToast('APIキーを入力してください');
+    throw new Error('APIキー未入力');
+  }
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: systemPrompt }] },
+      contents: messages.map(m => ({ role: m.role, parts: [{ text: m.text }] })),
+      generationConfig: { maxOutputTokens: maxTokens }
+    })
+  });
+  const data = await response.json();
+  if (data.error) {
+    showToast('エラー: ' + data.error.message);
+    throw new Error(data.error.message);
+  }
+  return data.candidates[0].content.parts[0].text.trim();
+}
+
+/* ===================== タブ切り替え ===================== */
+$('#tabs').addEventListener('click', (e)=>{
+  const btn = e.target.closest('button[data-tab]');
+  if(!btn) return;
+  $$('#tabs button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['quiz','practice','wheel','tutor'].forEach(name=>{
+    $('#tab-'+name).classList.toggle('hidden', name !== btn.dataset.tab);
+  });
+});
+
+/* ===================== 1. クイズ機能（基礎 + AI生成） ===================== */
+const QUIZ_DATA = [
+  {
+    id:'q1',
+    q:'タイヤサイズ「195/65R15」の「195」が表すものは？',
+    choices:['タイヤ幅(mm)','タイヤ外径(mm)','ホイール幅(mm)','リム径(インチ)'],
+    correct:0,
+    explain:'195はタイヤの幅(mm)です。幅が広いほど接地面積が増える傾向があります。'
+  },
+  {
+    id:'q2',
+    q:'空気圧はどの状態で点検するのが基本ですか？',
+    choices:['走行後','冷えている状態','雨の日','高速道路走行後'],
+    correct:1,
+    explain:'走行すると空気圧が上がるため、冷えた状態で測定するのが基本です。'
+  },
+  {
+    id:'q3',
+    q:'タイヤ側面の「2424」は何を表していますか？',
+    choices:['2024年24週製造','24インチ','製造工場番号','推奨空気圧'],
+    correct:0,
+    explain:'4桁の数字は製造年週です。24は2024年、後半24は第24週を表します。'
+  },
+  {
+    id:'q4',
+    q:'空気圧不足で起こりやすい摩耗は？',
+    choices:['両肩摩耗','センター摩耗','片減り','段減り'],
+    correct:0,
+    explain:'空気圧不足ではタイヤの両肩に荷重が集中し、両肩摩耗が起こりやすくなります。'
+  },
+  {
+    id:'q5',
+    q:'REGNOシリーズ最大の特長は？',
+    choices:['静粛性と乗り心地','オフロード性能','雪道性能','価格の安さ'],
+    correct:0,
+    explain:'REGNOは静粛性と快適性を重視したプレミアムタイヤです。'
+  },
+  {
+    id:'q6',
+    q:'お客様にタイヤ交換時期を伝える目安は？',
+    choices:['残り溝1.6mm以下','残り溝4mm程度でも案内','製造から1年','空気圧だけ確認'],
+    correct:1,
+    explain:'法的には1.6mmですが、安全面では4mm前後から交換を案内することが多いです。'
+  },
+  {
+    id:'q7',
+    q:'タイヤ交換後にバランス調整を行う目的は？',
+    choices:['振動を防ぐため','燃費を上げるため','空気圧調整のため','見た目を良くするため'],
+    correct:0,
+    explain:'重量の偏りを調整し、高速走行時の振動やハンドルのブレを防ぎます。'
+  },
+  {
+    id:'q8',
+    q:'お客様が「年間走行距離が少ない」と話したら最初に確認したいことは？',
+    choices:['使用目的','好きな色','車の価格','保険会社'],
+    correct:0,
+    explain:'通勤・買い物・高速利用など使用目的を確認すると適切なタイヤ提案につながります。'
+  },
+  {
+    id:'q9',
+    q:'XL規格タイヤ装着時に特に確認することは？',
+    choices:['指定空気圧','ボディカラー','オイル量','ナンバー'],
+    correct:0,
+    explain:'XL規格は通常タイヤと必要空気圧が異なる場合があるため、メーカー指定値を確認します。'
+  }
+];
+
+let quizProgress = {};
+let aiQuizData = [];
+let currentQuizId = null;
+let generatingQuiz = false;
+let wrongQuestions = [];
+
+function allQuizData(){ return QUIZ_DATA.concat(aiQuizData); }
+
+async function loadQuizProgress(){
+  try{
+    const r = await window.storage.get('quiz-progress', false);
+    quizProgress = r && r.value ? JSON.parse(r.value) : {};
+  }catch(e){ quizProgress = {}; }
+}
+async function saveQuizProgress(){
+  try{ await window.storage.set('quiz-progress', JSON.stringify(quizProgress), false); }catch(e){}
+}
+async function loadAiQuizBank(){
+  try{
+    const r = await window.storage.get('ai-quiz-bank', false);
+    aiQuizData = r && r.value ? JSON.parse(r.value) : [];
+  }catch(e){ aiQuizData = []; }
+}
+async function saveAiQuizBank(){
+  try{ await window.storage.set('ai-quiz-bank', JSON.stringify(aiQuizData), false); }catch(e){}
+}
+
+function renderQuizList(){
+  const answeredCount = QUIZ_DATA.filter(q=>quizProgress[q.id]?.answered).length;
+  const pct = Math.round((answeredCount/QUIZ_DATA.length)*100);
+
+  let html = `
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="progress-label">${answeredCount} / ${QUIZ_DATA.length} 問回答済み</div>
+    </div>
+    <p class="section-title">基礎問題</p>
+    <div class="grid q-grid">
+  `;
+  QUIZ_DATA.forEach((q,i)=>{
+    html += quizCardHtml(q, i+1);
+  });
+  html += `</div>`;
+
+  html += `
+    <div class="section-head-row">
+      <p class="section-title" style="margin:0;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--ai)"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg>
+        AIが作る苦手克服問題
+      </p>
+      <button class="btn ai-btn small" id="genQuizBtn" ${generatingQuiz?'disabled':''}>
+        ${generatingQuiz ? '<span class="spinner"></span>AIが作成中…' : (aiQuizData.length ? '新しく作り直す' : '問題を作成する')}
+      </button>
+    </div>
+  `;
+  if(aiQuizData.length){
+    html += `<div class="grid q-grid">`;
+    aiQuizData.forEach((q)=>{
+      html += quizCardHtml(q, null, true);
+    });
+    html += `</div>`;
+  } else if(!generatingQuiz){
+    html += emptyState('まだAI問題がありません', '間違えた問題の分野をもとに、AIが練習問題を作成します。');
+  }
+
+  $('#quizList').innerHTML = html;
+
+  $$('.q-card', $('#quizList')).forEach(card=>{
+    card.addEventListener('click', ()=>openQuizDetail(card.dataset.id));
+  });
+  const genBtn = $('#genQuizBtn');
+  if(genBtn) genBtn.addEventListener('click', generateAiQuiz);
+}
+
+function quizCardHtml(q, num, isAi){
+  const prog = quizProgress[q.id];
+  let pill = '<span class="status-pill unanswered">未回答</span>';
+  if(prog?.answered){
+    pill = prog.correctFlag
+      ? '<span class="status-pill correct">正解 ✓</span>'
+      : '<span class="status-pill incorrect">要復習 ✗</span>';
+  }
+  return `
+    <div class="q-card ${isAi?'ai-card':''}" data-id="${q.id}">
+      <div class="qnum mono">${isAi ? '<span class="ai-badge">✦ AI生成</span>' : 'Q'+num.toString().padStart(2,'0')}</div>
+      <h3>${escapeHtml(q.q)}</h3>
+      ${pill}
+    </div>
+  `;
+}
+
+async function generateAiQuiz(){
+  if(generatingQuiz) return;
+  generatingQuiz = true;
+  renderQuizList();
+
+  const weakQs = QUIZ_DATA.filter(q => quizProgress[q.id]?.answered && !quizProgress[q.id]?.correctFlag);
+  const topicText = weakQs.length
+    ? weakQs.map(q=>'・'+q.q).join('\n')
+    : '（まだ間違えた問題はありません。タイヤ構造・整備・安全に関する基礎知識から幅広く出題してください）';
+
+const systemPrompt = 'あなたはタイヤ販売店で10年以上新人教育を担当している教育責任者です。タイヤ販売店の新人向けクイズを作成してください。問題は現場で役立つ実践的な内容とし、タイヤ・ホイール・空気圧・摩耗・メーカー特徴・接客・商品提案・法規からランダムに出題してください。問題文は40文字以内、選択肢は4つ、正解は1つ、解説は60文字以内で簡潔にしてください。前置きや会話文、長い状況説明は不要です。必ずJSON配列のみ返してください。説明文・Markdown・```・```jsonは禁止です。返却形式は必ず [{"q":"問題","choices":["A","B","C","D"],"correct":0,"explain":"解説"}] としてください。'; 
+const userPrompt = `次の分野を苦手としている新人スタッフ向けに、実務に役立つタイヤ販売店の接客・整備知識に関する4択問題を3問作成してください。\n\n苦手分野の元になった問題:\n${topicText}\n\n既存の定番問題と表現が重複しないようにしてください。`;
+
+try{
+    // クイズ生成はJSON配列で返してほしいので wantJson=true を指定
+    const raw = await callAI(systemPrompt, userPrompt, 4096, true);
+
+      console.log(raw);
+    
+    // JSONの掃除をここで行う（stripJsonFence関数は不要になります）
+    const cleanedRaw = raw.replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/```\s*$/,'').trim();
+    const parsed = JSON.parse(cleanedRaw);
+    
+    if(!Array.isArray(parsed) || parsed.length===0) throw new Error('invalid format');
+    const newItems = parsed.map(item => ({
+      id: 'ai_'+uid(),
+      q: item.q,
+      choices: item.choices,
+      correct: item.correct,
+      explain: item.explain,
+      generatedAt: Date.now()
+    }));
+    aiQuizData = newItems.concat(aiQuizData).slice(0, 12);
+    await saveAiQuizBank();
+    showToast('AIが新しい問題を作成しました');
+  }catch(e){
+    console.error(e); // エラー内容がコンソールで見れるので便利です
+    showToast('AI問題の作成に失敗しました。もう一度お試しください。');
+  }finally{
+    generatingQuiz = false;
+    renderQuizList();
+  }
+}
+
+function openQuizDetail(id){
+  currentQuizId = id;
+  $('#quizList').classList.add('hidden');
+  $('#quizDetail').classList.remove('hidden');
+  renderQuizDetail();
+}
+
+function renderQuizDetail(){
+  const combined = allQuizData();
+  const idx = combined.findIndex(q=>q.id===currentQuizId);
+  const q = combined[idx];
+  const isAi = q.id.startsWith('ai_');
+  const prog = quizProgress[q.id];
+  const answered = !!prog?.answered;
+
+  let choicesHtml = '';
+  q.choices.forEach((c, ci)=>{
+    let cls = 'choice';
+    if(answered){
+      cls += ' locked';
+      if(ci === q.correct) cls += ' reveal-correct';
+      if(ci === prog.choiceIndex && ci !== q.correct) cls += ' chosen-wrong';
+      if(ci === prog.choiceIndex && ci === q.correct) cls += ' chosen-correct';
+    }
+    choicesHtml += `
+      <div class="${cls}" data-idx="${ci}">
+        <span class="letter">${'ABCD'[ci]}</span>
+        <span>${escapeHtml(c)}</span>
+      </div>
+    `;
+  });
+
+  let explainHtml = '';
+  if(answered){
+    explainHtml = `
+      <div class="explain-box ${isAi?'ai':''}">
+        <span class="tag">${isAi ? '✦ AI解説' : '解説'}</span>
+        <p>${escapeHtml(q.explain)}</p>
+      </div>
+      <div class="next-row">
+        <button class="btn" id="backListBtn2">一覧に戻る</button>
+      </div>
+    `;
+  }
+
+  $('#quizDetail').innerHTML = `
+    <button class="back-btn" id="backListBtn">← 一覧に戻る</button>
+    <div class="card">
+      <div class="qnum mono" style="margin-bottom:10px;">${isAi ? '<span class="ai-badge">✦ AI生成問題</span>' : 'Q'+(QUIZ_DATA.findIndex(bq=>bq.id===q.id)+1).toString().padStart(2,'0')+' / '+QUIZ_DATA.length}</div>
+      <p class="detail-q">${escapeHtml(q.q)}</p>
+      <div class="choice-list">${choicesHtml}</div>
+      ${explainHtml}
+    </div>
+  `;
+
+  $('#backListBtn').addEventListener('click', backToQuizList);
+  const backBtn2 = $('#backListBtn2');
+  if(backBtn2) backBtn2.addEventListener('click', backToQuizList);
+
+  if(!answered){
+    $$('.choice', $('#quizDetail')).forEach(el=>{
+      el.addEventListener('click', async ()=>{
+        const chosen = parseInt(el.dataset.idx,10);
+        quizProgress[q.id] = { answered:true, correctFlag: chosen===q.correct, choiceIndex: chosen };
+        await saveQuizProgress();
+        renderQuizDetail();
+      });
+    });
+  }
+}
+
+function backToQuizList(){
+  $('#quizDetail').classList.add('hidden');
+  $('#quizList').classList.remove('hidden');
+  renderQuizList();
+}
+
+/* ===================== 2. AI家庭教師（レッスン＋自由質問チャット） ===================== */
+let tutorHistory = [];      // {role:'user'|'model', text}
+let tutorLessonQueue = [];
+let tutorLessonIndex = 0;
+let tutorBusy = false;
+
+function computeWeakTopics(){
+  const weak = QUIZ_DATA.filter(q => quizProgress[q.id]?.answered && !quizProgress[q.id]?.correctFlag).map(q=>q.q);
+  if(weak.length) return weak;
+  return QUIZ_DATA.slice(0, 3).map(q=>q.q);
+}
+
+async function startLesson(){
+  if(tutorBusy) return;
+  tutorHistory = [];
+  tutorLessonQueue = computeWeakTopics();
+  tutorLessonIndex = 0;
+  await askNextLessonTopic();
+}
+
+async function askNextLessonTopic(){
+  if(tutorBusy) return;
+  if(tutorLessonIndex >= tutorLessonQueue.length){
+    tutorHistory.push({ role:'model', text:'これで苦手分野のレッスンは一通り終わりです。よく頑張りました！他に気になることがあれば、下から自由に質問してくださいね。' });
+    renderTutorChat();
+    return;
+  }
+  const topic = tutorLessonQueue[tutorLessonIndex];
+  tutorLessonIndex++;
+  tutorHistory.push({ role:'user', text:`次のテーマについて、初心者にもわかるように要点を教えてください。テーマ：「${topic}」` });
+  await runTutorTurn();
+}
+
+async function sendTutorMessage(){
+  if(tutorBusy) return;
+  const input = $('#tutorInput');
+  const text = input.value.trim();
+  if(!text) return;
+  tutorHistory.push({ role:'user', text });
+  input.value = '';
+  await runTutorTurn();
+}
+
+async function runTutorTurn(){
+  tutorBusy = true;
+  renderTutorChat(true);
+  const systemPrompt = 'あなたはタイヤ販売店の新人スタッフを教える、優しくて頼れる家庭教師AIです。専門用語には簡単な説明を添え、初心者にもわかりやすい言葉で教えてください。生徒を励ましながら、1回の返信は300〜400字程度で簡潔にまとめてください。見出しが必要な場合は【】を使い、Markdownの#やアスタリスクによる強調は使わないでください。';
+  try{
+    const reply = await callAIChat(systemPrompt, tutorHistory, 900);
+    tutorHistory.push({ role:'model', text: reply });
+  }catch(e){
+    tutorHistory.push({ role:'model', text:'すみません、うまく応答できませんでした。もう一度お試しください。' });
+  }finally{
+    tutorBusy = false;
+    renderTutorChat();
+  }
+}
+
+function renderTutorChat(loading){
+  const log = $('#tutorChatLog');
+  if(!log) return;
+
+  if(tutorHistory.length === 0){
+    log.innerHTML = `
+      <div class="tutor-empty">
+        <p>まだ会話がありません。下のボタンで苦手分野のレッスンを始めるか、入力欄から自由に質問してみましょう。</p>
+        <button class="btn ai-btn small" id="tutorStartBtn">🎓 レッスンを始める</button>
+      </div>
+    `;
+    $('#tutorStartBtn').addEventListener('click', startLesson);
+  } else {
+    log.innerHTML = tutorHistory.map(m => `
+      <div class="tutor-msg ${m.role==='model' ? 'ai' : 'user'}">
+        <div class="tutor-msg-label">${m.role==='model' ? '✦ AI家庭教師' : escapeHtml(getStaffName())}</div>
+        <div class="tutor-msg-body">${escapeHtml(m.text)}</div>
+      </div>
+    `).join('');
+    if(loading){
+      log.innerHTML += `
+        <div class="tutor-msg ai loading">
+          <div class="tutor-msg-label">✦ AI家庭教師</div>
+          <div class="tutor-msg-body"><span class="spinner" style="border-color:rgba(124,77,234,.25);border-top-color:var(--ai);"></span>考え中…</div>
+        </div>
+      `;
+    }
+  }
+  log.scrollTop = log.scrollHeight;
+  updateTutorControls(loading);
+}
+
+function updateTutorControls(loading){
+  const row = $('#tutorStartRow');
+  if(!row) return;
+  const hasMoreLesson = tutorLessonQueue.length > 0 && tutorLessonIndex < tutorLessonQueue.length && tutorHistory.length > 0;
+  let html = '';
+  if(hasMoreLesson){
+    html += `<button class="btn ghost small" id="tutorNextTopicBtn" ${loading?'disabled':''}>次のトピックへ（残り${tutorLessonQueue.length - tutorLessonIndex}件）→</button>`;
+  }
+  if(tutorHistory.length > 0){
+    html += `<button class="btn ghost small" id="tutorResetBtn" ${loading?'disabled':''}>🔄 会話をリセット</button>`;
+  }
+  row.innerHTML = html;
+
+  const nextBtn = $('#tutorNextTopicBtn');
+  if(nextBtn) nextBtn.addEventListener('click', askNextLessonTopic);
+  const resetBtn = $('#tutorResetBtn');
+  if(resetBtn) resetBtn.addEventListener('click', ()=>{
+    tutorHistory = []; tutorLessonQueue = []; tutorLessonIndex = 0;
+    renderTutorChat();
+  });
+
+  $('#tutorSendBtn').disabled = !!loading;
+  $('#tutorInput').disabled = !!loading;
+}
+
+$('#tutorSendBtn').addEventListener('click', sendTutorMessage);
+$('#tutorInput').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendTutorMessage();
+  }
+});
+
+/* ===================== 3. マッチングパズル（タイヤ／ホイール共通エンジン） ===================== */
+function shuffleArr(arr){ return arr.slice().sort(()=>Math.random()-0.5); }
+
+/* 車種タイプの共通アイコンセット。実写真の代わりにこの中から選んでもらう。 */
+const VEHICLE_TYPES = [
+  { key:'kei', label:'軽自動車',
+    icon:'<svg viewBox="0 0 48 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="14" y="6" width="20" height="13" rx="4"/><rect x="8" y="17" width="32" height="8" rx="3"/><circle cx="15" cy="27" r="3.5"/><circle cx="33" cy="27" r="3.5"/></svg>' },
+  { key:'compact', label:'コンパクトカー',
+    icon:'<svg viewBox="0 0 48 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="13" y="8" width="22" height="11" rx="4"/><rect x="6" y="17" width="36" height="8" rx="3"/><circle cx="15" cy="27" r="3.5"/><circle cx="33" cy="27" r="3.5"/></svg>' },
+  { key:'sedan', label:'セダン',
+    icon:'<svg viewBox="0 0 48 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="15" y="9" width="18" height="9" rx="3"/><rect x="4" y="18" width="40" height="7" rx="3"/><circle cx="15" cy="27" r="3.5"/><circle cx="33" cy="27" r="3.5"/></svg>' },
+  { key:'suv', label:'SUV',
+    icon:'<svg viewBox="0 0 48 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="12" y="6" width="24" height="12" rx="3"/><rect x="5" y="16" width="38" height="9" rx="3"/><circle cx="15" cy="27" r="3.5"/><circle cx="33" cy="27" r="3.5"/></svg>' },
+  { key:'minivan', label:'ミニバン',
+    icon:'<svg viewBox="0 0 48 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="10" y="5" width="28" height="13" rx="3"/><rect x="6" y="15" width="36" height="10" rx="3"/><circle cx="15" cy="27" r="3.5"/><circle cx="33" cy="27" r="3.5"/></svg>' },
+  { key:'truck', label:'商用車・トラック',
+    icon:'<svg viewBox="0 0 48 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="8" y="14" width="12" height="11" rx="3"/><rect x="20" y="18" width="22" height="7" rx="1"/><circle cx="14" cy="27" r="3.5"/><circle cx="36" cy="27" r="3.5"/></svg>' }
+];
+function vehicleIconSvg(key){
+  const found = VEHICLE_TYPES.find(v=>v.key===key);
+  return found ? found.icon : VEHICLE_TYPES[0].icon;
+}
+function vehicleTypeLabel(key){
+  const found = VEHICLE_TYPES.find(v=>v.key===key);
+  return found ? found.label : '車種';
+}
+
+function createMatchingGame(cfg){
+  let customData = [];
+  let matched = new Set();
+  let leftOrder = [], rightOrder = [];
+
+  function allData(){ return cfg.builtinData.concat(customData); }
+  function byId(id){ return allData().find(d=>d.id===id); }
+
+  async function listCustomItems(){
+    const listRes = await window.storage.list(cfg.storagePrefixItem, true);
+    const keys = (listRes && listRes.keys) || [];
+    const items = [];
+    for(const k of keys){
+      try{
+        const r = await window.storage.get(k, true);
+        if(r && r.value) items.push(JSON.parse(r.value));
+      }catch(e){}
+    }
+    return items;
+  }
+  async function saveCustomItem(item){
+    await window.storage.set(cfg.storagePrefixItem+item.id, JSON.stringify(item), true);
+  }
+  async function deleteCustomItem(id){
+    await window.storage.delete(cfg.storagePrefixItem+id, true);
+  }
+
+  async function initRound(){
+    try{ customData = await listCustomItems(); }catch(e){ customData = []; }
+    matched = new Set();
+    const data = allData();
+    leftOrder = shuffleArr(data.map(d=>d.id));
+    rightOrder = shuffleArr(data.map(d=>d.id));
+    renderShell();
+  }
+
+  function renderShell(){
+    $('#'+cfg.containerId).innerHTML = `
+      <div class="card">
+        <div class="puzzle-header">
+          <div>
+            <p class="section-title" style="margin:0 0 4px;">${cfg.icon} ${escapeHtml(cfg.title)}</p>
+            <p style="font-size:12.5px;color:var(--text-dim);margin:0;">${escapeHtml(cfg.subtitle)}</p>
+          </div>
+          <div class="puzzle-score mono" id="${cfg.key}Score"></div>
+        </div>
+        <div class="puzzle-board" id="${cfg.key}Board">
+          <svg id="${cfg.key}Svg" class="puzzle-svg"></svg>
+          <div class="puzzle-col">
+            <div class="puzzle-col-label">${escapeHtml(cfg.leftColLabel)}</div>
+            <div id="${cfg.key}LeftCol" style="display:flex;flex-direction:column;gap:12px;"></div>
+          </div>
+          <div class="puzzle-col">
+            <div class="puzzle-col-label">${escapeHtml(cfg.rightColLabel)}</div>
+            <div id="${cfg.key}RightCol" style="display:flex;flex-direction:column;gap:12px;"></div>
+          </div>
+        </div>
+        <div id="${cfg.key}Banner" class="puzzle-banner hidden"></div>
+        <div class="puzzle-actions">
+          <button class="btn ghost small" id="${cfg.key}AddBtn">＋ 候補を追加・管理</button>
+          <button class="btn ghost small" id="${cfg.key}ResetBtn">🔄 シャッフルしてやり直す</button>
+        </div>
+      </div>
+    `;
+    $('#'+cfg.key+'ResetBtn').addEventListener('click', initRound);
+    $('#'+cfg.key+'AddBtn').addEventListener('click', openAddModal);
+    renderCards();
+  }
+
+  function renderCards(){
+    const leftCol = $('#'+cfg.key+'LeftCol');
+    const rightCol = $('#'+cfg.key+'RightCol');
+    if(!leftCol || !rightCol) return;
+
+    leftCol.innerHTML = leftOrder.map(id=>{
+      const d = byId(id);
+      const m = matched.has(id);
+      return `<div class="puzzle-card vehicle ${m?'matched':''}" data-id="${id}" data-side="left" data-game="${cfg.key}">
+        <div class="vehicle-icon">${vehicleIconSvg(d.vehicleType)}</div>
+        <div class="vehicle-label">${escapeHtml(d.left)}${d.leftExample ? '<span class="ex">'+escapeHtml(d.leftExample)+'</span>' : ''}</div>
+      </div>`;
+    }).join('');
+
+    rightCol.innerHTML = rightOrder.map(id=>{
+      const d = byId(id);
+      const m = matched.has(id);
+      return `<div class="puzzle-card tire ${m?'matched':''}" data-id="${id}" data-side="right" data-game="${cfg.key}">
+        ${escapeHtml(d.right)}
+      </div>`;
+    }).join('');
+
+    $('#'+cfg.key+'Score').textContent = `${matched.size} / ${allData().length} マッチ`;
+
+    $$('.puzzle-card.vehicle', leftCol).forEach(el=>{
+      if(el.classList.contains('matched')) return;
+      el.addEventListener('pointerdown', (e)=> startDrag(e, el));
+    });
+
+    requestAnimationFrame(drawMatchedLines);
+
+    if(matched.size === allData().length){
+      setTimeout(showComplete, 250);
+    }
+  }
+
+  function getBoardRect(){ return $('#'+cfg.key+'Board').getBoundingClientRect(); }
+  function cardAnchor(el, side){
+    const r = el.getBoundingClientRect();
+    const boardRect = getBoardRect();
+    const x = side==='left' ? (r.right - boardRect.left) : (r.left - boardRect.left);
+    const y = (r.top + r.height/2) - boardRect.top;
+    return { x, y };
+  }
+  function drawMatchedLines(){
+    const svg = $('#'+cfg.key+'Svg');
+    if(!svg) return;
+    const boardRect = getBoardRect();
+    svg.setAttribute('width', boardRect.width);
+    svg.setAttribute('height', boardRect.height);
+    svg.innerHTML = '';
+    matched.forEach(id=>{
+      const leftEl = document.querySelector(`.puzzle-card[data-game="${cfg.key}"][data-side="left"][data-id="${id}"]`);
+      const rightEl = document.querySelector(`.puzzle-card[data-game="${cfg.key}"][data-side="right"][data-id="${id}"]`);
+      if(!leftEl || !rightEl) return;
+      const a = cardAnchor(leftEl,'left');
+      const b = cardAnchor(rightEl,'right');
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',a.x); line.setAttribute('y1',a.y);
+      line.setAttribute('x2',b.x); line.setAttribute('y2',b.y);
+      line.setAttribute('stroke','#16a34a');
+      line.setAttribute('stroke-width','2.5');
+      line.setAttribute('stroke-linecap','round');
+      svg.appendChild(line);
+    });
+  }
+
+  function startDrag(e, el){
+    e.preventDefault();
+    const id = el.dataset.id;
+    el.setPointerCapture(e.pointerId);
+    const anchor = cardAnchor(el, 'left');
+    el.classList.add('dragging');
+
+    const svg = $('#'+cfg.key+'Svg');
+    const tempLine = document.createElementNS('http://www.w3.org/2000/svg','line');
+    tempLine.setAttribute('id', cfg.key+'TempDragLine');
+    tempLine.setAttribute('x1',anchor.x); tempLine.setAttribute('y1',anchor.y);
+    tempLine.setAttribute('x2',anchor.x); tempLine.setAttribute('y2',anchor.y);
+    tempLine.setAttribute('stroke','#2f6fed');
+    tempLine.setAttribute('stroke-width','2.5');
+    tempLine.setAttribute('stroke-dasharray','6 4');
+    tempLine.setAttribute('stroke-linecap','round');
+    svg.appendChild(tempLine);
+
+    const onMove = (ev)=>{
+      const boardRect = getBoardRect();
+      const x = ev.clientX - boardRect.left;
+      const y = ev.clientY - boardRect.top;
+      const line = $('#'+cfg.key+'TempDragLine');
+      if(line){ line.setAttribute('x2',x); line.setAttribute('y2',y); }
+    };
+    const onUp = (ev)=>{
+      el.classList.remove('dragging');
+      const line = $('#'+cfg.key+'TempDragLine');
+      if(line) line.remove();
+      el.removeEventListener('pointermove', onMove);
+      el.removeEventListener('pointerup', onUp);
+      el.removeEventListener('pointercancel', onUp);
+
+      const target = document.elementFromPoint(ev.clientX, ev.clientY);
+      const targetCard = target ? target.closest(`.puzzle-card.tire[data-game="${cfg.key}"]`) : null;
+      if(targetCard && !targetCard.classList.contains('matched')){
+        evaluateMatch(id, targetCard.dataset.id, targetCard);
+      }
+    };
+
+    el.addEventListener('pointermove', onMove);
+    el.addEventListener('pointerup', onUp);
+    el.addEventListener('pointercancel', onUp);
+  }
+
+  function evaluateMatch(leftId, rightId, rightEl){
+    if(leftId === rightId){
+      matched.add(leftId);
+      showBanner(true, byId(leftId));
+      renderCards();
+    } else {
+      rightEl.classList.add('wrong-flash');
+      setTimeout(()=>rightEl.classList.remove('wrong-flash'), 450);
+      showBanner(false);
+    }
+  }
+
+  function showBanner(correct, data){
+    const el = $('#'+cfg.key+'Banner');
+    if(!el) return;
+    el.classList.remove('hidden');
+    if(correct){
+      el.style.background = 'var(--good-soft)';
+      el.style.borderColor = '#bfe6cc';
+      el.innerHTML = `
+        <div class="ping" style="color:var(--good);">ピンポン！ 🎉</div>
+        <p><strong>${escapeHtml(data.left)}</strong>${data.leftExample ? '（'+escapeHtml(data.leftExample)+'）' : ''}には <strong>${escapeHtml(data.right)}</strong> がぴったりです。${escapeHtml(data.reason)}</p>
+      `;
+    } else {
+      el.style.background = 'var(--warn-soft)';
+      el.style.borderColor = '#f6c9c2';
+      el.innerHTML = `
+        <div class="ping" style="color:var(--warn);">ブー…もう一度！</div>
+        <p>その組み合わせは違うようです。もう一度つないでみましょう。</p>
+      `;
+    }
+  }
+
+  function showComplete(){
+    const el = $('#'+cfg.key+'Banner');
+    if(!el) return;
+    el.classList.remove('hidden');
+    el.style.background = 'var(--primary-soft)';
+    el.style.borderColor = '#c8dbfc';
+    el.innerHTML = `
+      <div class="ping" style="color:var(--primary);">🎊 コンプリート！</div>
+      <p>全ての組み合わせを正解しました。「シャッフルしてやり直す」でもう一度挑戦できます。</p>
+    `;
+  }
+
+  function openAddModal(){
+    const bg = document.createElement('div');
+    bg.className = 'modal-bg';
+    let selectedType = null;
+    bg.innerHTML = `
+      <div class="modal">
+        <h3>候補を追加・管理</h3>
+        <div class="field">
+          <label>車種タイプを選択</label>
+          <div class="icon-picker" id="${cfg.key}IconPicker">
+            ${VEHICLE_TYPES.map(v => `
+              <button type="button" class="icon-pick-btn" data-key="${v.key}">
+                <div class="icon-pick-svg">${v.icon}</div>
+                <div class="icon-pick-label">${escapeHtml(v.label)}</div>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+        <div class="field">
+          <label>具体的な車種名（任意）</label>
+          <input id="${cfg.key}AddLeftEx" type="text" maxlength="30" placeholder="例：アルファードなど">
+        </div>
+        <div class="field">
+          <label>${escapeHtml(cfg.addLabels.right)}</label>
+          <input id="${cfg.key}AddRight" type="text" maxlength="30" placeholder="${escapeHtml(cfg.addLabels.rightPlaceholder)}">
+        </div>
+        <div class="field">
+          <label>正解理由（正解時にAI風コメントとして表示）</label>
+          <textarea id="${cfg.key}AddReason" rows="3" maxlength="200" placeholder="例：…"></textarea>
+        </div>
+        <div class="modal-actions" style="justify-content:flex-start;">
+          <button class="btn" id="${cfg.key}AddSaveBtn">この候補を追加する</button>
+        </div>
+
+        <hr class="divider">
+        <p class="section-title">追加した候補（削除できます）</p>
+        <div id="${cfg.key}CustomList" style="display:flex;flex-direction:column;gap:8px;"></div>
+
+        <div class="modal-actions">
+          <button class="btn ghost" id="${cfg.key}AddCloseBtn">閉じる</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(bg);
+    bg.addEventListener('click', (e)=>{ if(e.target===bg) bg.remove(); });
+    $('#'+cfg.key+'AddCloseBtn', bg).addEventListener('click', ()=>bg.remove());
+
+    $$('.icon-pick-btn', bg).forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        $$('.icon-pick-btn', bg).forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedType = btn.dataset.key;
+      });
+    });
+
+    $('#'+cfg.key+'AddSaveBtn', bg).addEventListener('click', async ()=>{
+      const leftExample = $('#'+cfg.key+'AddLeftEx', bg).value.trim();
+      const right = $('#'+cfg.key+'AddRight', bg).value.trim();
+      const reason = $('#'+cfg.key+'AddReason', bg).value.trim();
+      if(!selectedType){ showToast('車種タイプを選んでください'); return; }
+      if(!right){ showToast(`${cfg.addLabels.right}は必須です`); return; }
+      const left = vehicleTypeLabel(selectedType);
+      const item = {
+        id: cfg.key+'_custom_'+uid(),
+        vehicleType: selectedType,
+        left, leftExample: leftExample || '',
+        right, reason: reason || `${left}には${right}が適合します。`
+      };
+      try{
+        await saveCustomItem(item);
+        showToast('候補を追加しました');
+        $$('.icon-pick-btn', bg).forEach(b=>b.classList.remove('selected'));
+        selectedType = null;
+        $('#'+cfg.key+'AddLeftEx', bg).value = '';
+        $('#'+cfg.key+'AddRight', bg).value = '';
+        $('#'+cfg.key+'AddReason', bg).value = '';
+        await refreshCustomList(bg);
+        await initRound();
+      }catch(e){
+        showToast('追加に失敗しました');
+      }
+    });
+
+    refreshCustomList(bg);
+  }
+
+  async function refreshCustomList(bg){
+    const listEl = $('#'+cfg.key+'CustomList', bg);
+    if(!listEl) return;
+    listEl.innerHTML = `<div style="font-size:12.5px;color:var(--text-faint);">読み込み中…</div>`;
+    let items = [];
+    try{ items = await listCustomItems(); }catch(e){ items = []; }
+    if(items.length===0){
+      listEl.innerHTML = `<div style="font-size:12.5px;color:var(--text-faint);">まだ追加した候補はありません。</div>`;
+      return;
+    }
+    listEl.innerHTML = items.map(it => `
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--surface-2);border-radius:8px;padding:8px 12px;">
+        <div style="font-size:13px;">
+          <strong>${escapeHtml(it.left)}</strong>${it.leftExample ? '（'+escapeHtml(it.leftExample)+'）' : ''}
+          <span class="mono" style="color:var(--text-faint);"> → ${escapeHtml(it.right)}</span>
+        </div>
+        <button class="icon-btn ${cfg.key}-del" data-id="${it.id}" title="削除">✕</button>
+      </div>
+    `).join('');
+    $$('.'+cfg.key+'-del', listEl).forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        try{
+          await deleteCustomItem(btn.dataset.id);
+          showToast('削除しました');
+          await refreshCustomList(bg);
+          await initRound();
+        }catch(e){ showToast('削除に失敗しました'); }
+      });
+    });
+  }
+
+  window.addEventListener('resize', ()=>{ if($('#'+cfg.key+'Board')) drawMatchedLines(); });
+
+  return { initRound };
+}
+
+/* タイヤ・マッチングパズル */
+const tireGame = createMatchingGame({
+  key: 'tire',
+  containerId: 'puzzleContainer',
+  icon: '🧩',
+  title: 'タイヤ・マッチングパズル',
+  subtitle: '車種カードを、あうタイヤサイズカードまで指でドラッグしてつなげてみましょう',
+  leftColLabel: '車種',
+  rightColLabel: 'タイヤサイズ',
+  itemNoun: 'パズル候補',
+  firestoreCollection: 'puzzle-items',
+  storagePrefixItem: 'puzzle-item:',
+  addLabels: {
+    right:'正解のタイヤサイズ', rightPlaceholder:'例：225/60R18'
+  },
+  builtinData: [
+    { id:'kei', vehicleType:'kei', left:'軽自動車', leftExample:'N-BOXなど', right:'155/65R14',
+      reason:'車両重量が軽く必要な負荷能力も小さいため、幅155mm・扁平率65%・14インチという軽量コンパクトなサイズで、燃費と価格のバランスが取れます。' },
+    { id:'compact', vehicleType:'compact', left:'コンパクトカー', leftExample:'フィットなど', right:'185/55R16',
+      reason:'車重・出力とも中程度のコンパクトカーには、幅185mm・扁平率55%・16インチが定番。乗り心地とハンドリングのバランスに優れます。' },
+    { id:'suv', vehicleType:'suv', left:'SUV', leftExample:'ハリアーなど', right:'225/65R17',
+      reason:'車重が重く車高も高いSUVは、幅225mm・扁平率65%・17インチのタイヤで十分な荷重能力と走行安定性を確保しています。' }
+  ]
+});
+
+/* ホイール・マッチングパズル */
+const wheelGame = createMatchingGame({
+  key: 'wheel',
+  containerId: 'wheelPuzzleContainer',
+  icon: '⚙️',
+  title: 'ホイール・マッチングパズル',
+  subtitle: '車種カードを、あうホイールサイズカードまで指でドラッグしてつなげてみましょう',
+  leftColLabel: '車種',
+  rightColLabel: 'ホイールサイズ',
+  itemNoun: 'ホイール候補',
+  firestoreCollection: 'wheel-items',
+  storagePrefixItem: 'wheel-item:',
+  addLabels: {
+    right:'正解のホイールサイズ', rightPlaceholder:'例：18インチ'
+  },
+  builtinData: [
+    { id:'kei', vehicleType:'kei', left:'軽自動車', leftExample:'N-BOXなど', right:'14インチ',
+      reason:'軽自動車は車重が軽く、ホイールも軽量・安価な14インチが標準的。乗り心地と価格のバランスが良い組み合わせです。' },
+    { id:'compact', vehicleType:'compact', left:'コンパクトカー', leftExample:'フィットなど', right:'16インチ',
+      reason:'コンパクトカーには16インチが定番。デザイン性とタイヤの選択肢の広さ、乗り心地のバランスに優れます。' },
+    { id:'suv', vehicleType:'suv', left:'SUV', leftExample:'ハリアーなど', right:'17インチ',
+      reason:'車重があり車高も高いSUVには17インチが標準的で、荷重能力と走行安定性、デザイン性を両立しています。' }
+  ]
+});
+
+
+/* ===================== 初期化 ===================== */
+(async function init(){
+  await loadQuizProgress();
+  await loadAiQuizBank();
+  renderQuizList();
+
+  renderTutorChat();
+
+  await tireGame.initRound();
+  await wheelGame.initRound();
+})();
+</script>
+</body>
+</html>
